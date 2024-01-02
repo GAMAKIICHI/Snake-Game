@@ -2,13 +2,22 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 
+enum KeyPress
+{
+    KEY_PRESS_UP,
+    KEY_PRESS_DOWN,
+    KEY_PRESS_LEFT,
+    KEY_PRESS_RIGHT,
+    KEY_PRESS_TOTAL
+};
+
 /*Starts up SDL and creates window*/
 bool init();
 
 /*Loads media*/
 bool loadMedia();
 
-/*Frees media and shits down SDL*/
+/*Frees media and shuts down SDL*/
 void closeWindow();
 
 SDL_Window *gWindow = NULL;
@@ -26,30 +35,39 @@ int main(int argc, char *argv[])
     }
     else
     {
-        /*Load media*/
-        if(!loadMedia())
-        {
-            printf("Failed to load media!\n");
-        }
-        else
-        {
-            /*Apply the image*/
-            SDL_BlitSurface(gHelloWorld, NULL, gScreenSurface, NULL);
+        SDL_BlitSurface(gHelloWorld, NULL, gScreenSurface, NULL);
 
-            /*Update the surface*/
-            SDL_UpdateWindowSurface(gWindow);
+        /*Update the surface*/
+        SDL_UpdateWindowSurface(gWindow);
 
-            //Hack for window to stay up
-            SDL_Event e;
-            bool quit = false;
-            while(quit == false)
+        
+
+        //Hack for window to stay up
+        SDL_Event e;
+        bool quit = false;
+        while(quit == false)
+        {
+            while(SDL_PollEvent(&e))
             {
-                while(SDL_PollEvent(&e))
+                if(e.type == SDL_QUIT)
                 {
-                    if(e.type == SDL_QUIT)
-                    {
-                        quit = true;
-                    }
+                    quit = true;
+                }
+
+                switch(e.key.keysym.sym)
+                {
+                    case SDLK_UP:
+                        printf("Up\n");
+                        break;
+                    case SDLK_DOWN:
+                        printf("Down\n");
+                        break;
+                    case SDLK_RIGHT:
+                        printf("Right\n");
+                        break;
+                    case SDLK_LEFT:
+                        printf("Left\n");
+                        break;
                 }
             }
         }

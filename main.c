@@ -15,7 +15,7 @@ SDL_Window *gWindow = NULL;
 SDL_Surface *gScreenSurface = NULL; 
 SDL_Surface *gHelloWorld = NULL;
 
-const int WIDTH = 800, HEIGHT = 600;
+const int WIDTH = 480, HEIGHT = 360;
 
 int main(int argc, char *argv[])
 {

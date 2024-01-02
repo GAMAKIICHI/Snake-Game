@@ -19,7 +19,6 @@ void closeWindow();
 
 SDL_Window *gWindow = NULL;
 SDL_Surface *gScreenSurface = NULL; 
-SDL_Surface *gHelloWorld = NULL;
 
 const int WIDTH = 480, HEIGHT = 360;
 
@@ -32,8 +31,6 @@ int main(int argc, char *argv[])
     }
     else
     {
-        SDL_BlitSurface(gHelloWorld, NULL, gScreenSurface, NULL);
-
         /*Update the surface*/
         SDL_UpdateWindowSurface(gWindow);
 
@@ -108,10 +105,6 @@ bool init()
 
 void closeWindow()
 {
-    /*Deallocate surface*/
-    SDL_FreeSurface(gHelloWorld);
-    gHelloWorld = NULL;
-
     /*Destroy Window*/
     SDL_DestroyWindow(gWindow);
     gWindow = NULL;

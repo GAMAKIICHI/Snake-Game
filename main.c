@@ -14,9 +14,6 @@ enum KeyPress
 /*Starts up SDL and creates window*/
 bool init();
 
-/*Loads media*/
-bool loadMedia();
-
 /*Frees media and shuts down SDL*/
 void closeWindow();
 
@@ -42,18 +39,20 @@ int main(int argc, char *argv[])
 
         
 
-        //Hack for window to stay up
+        /*Event handling*/
         SDL_Event e;
         bool quit = false;
         while(quit == false)
         {
             while(SDL_PollEvent(&e))
             {
+                /*Quit Event*/
                 if(e.type == SDL_QUIT)
                 {
                     quit = true;
                 }
 
+                /*Arrow key input Event*/
                 switch(e.key.keysym.sym)
                 {
                     case SDLK_UP:
@@ -102,22 +101,6 @@ bool init()
         {
             gScreenSurface = SDL_GetWindowSurface(gWindow);
         }
-    }
-
-    return success;
-}
-
-bool loadMedia()
-{
-    /*Loading success flag*/
-    bool success = true;
-
-    /*Load splash image*/
-    gHelloWorld = SDL_LoadBMP("480-360-sample.bmp");
-    if(gHelloWorld == NULL)
-    {
-        printf("Unable to load image %s! SDL Error: %s\n", "480-360-sample.bmp", SDL_GetError());
-        success = false;
     }
 
     return success;

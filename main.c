@@ -22,6 +22,7 @@ SDL_Surface *gScreenSurface = NULL;
 SDL_Renderer *gRenderer = NULL;
 
 const int WIDTH = 480, HEIGHT = 368;
+SDL_Rect gridRect = {(int)NULL,(int)NULL,16,16};
 
 int main(int argc, char *argv[])
 {
@@ -75,9 +76,10 @@ int main(int argc, char *argv[])
             {
                 for(int col = 0; col <= WIDTH; col+=16)
                 {
-                    SDL_Rect fillRect = {col,row,16,16};
+                    gridRect.x = col;
+                    gridRect.y = row;
                     SDL_SetRenderDrawColor(gRenderer, 0x1C, 0xFC, 0x3, 0xFF);
-                    SDL_RenderDrawRect(gRenderer, &fillRect);
+                    SDL_RenderDrawRect(gRenderer, &gridRect);
                 }
             }
 

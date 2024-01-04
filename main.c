@@ -37,28 +37,28 @@ SDL_Rect snakeRect = {(int)NULL, (int)NULL, 16,16};
 
 unsigned int lastMoved = 0;
 
-struct Position
+typedef struct
 {
     int x;
     int y;
-};
+} Position;
 
-struct Snake
+typedef struct
 {
-    struct Position pos;
-    struct Position sVel;
-    struct Position tail[(WIDTH / 16) * (HEIGHT / 16)];
+    Position pos;
+    Position sVel;
+    Position tail[(WIDTH / 16) * (HEIGHT / 16)];
     unsigned int score;
-};
+} Snake;
 
-void handleKeyEvent(SDL_Event *, struct Snake *);
-void move(struct Snake *);
-void renderSnake(struct Snake *);
+void handleKeyEvent(SDL_Event *, Snake *);
+void move(Snake *);
+void renderSnake(Snake *);
 void renderGrid();
 
 int main(int argc, char *argv[])
 {
-    struct Snake playerSnake = {{0,0}, {0,0}, {(int)NULL, (int)NULL}, 0};
+    Snake playerSnake = {{0,0}, {0,0}, {(int)NULL, (int)NULL}, 0};
 
     /*Start up SDL and create window*/
     if(!init())
@@ -151,7 +151,7 @@ void closeWindow()
     SDL_Quit();
 }
 
-void handleKeyEvent(SDL_Event *e, struct Snake *s)
+void handleKeyEvent(SDL_Event *e, Snake *s)
 {
     if(e->type == SDL_KEYDOWN && e->key.repeat == 0)
     {
@@ -178,7 +178,7 @@ void handleKeyEvent(SDL_Event *e, struct Snake *s)
     
 }
 
-void move(struct Snake *s)
+void move(Snake *s)
 {
     unsigned int currentTime = SDL_GetTicks();
     
@@ -190,7 +190,7 @@ void move(struct Snake *s)
     }
 }
 
-void renderSnake(struct Snake *s)
+void renderSnake(Snake *s)
 {
     snakeRect.x = s->pos.x;
     snakeRect.y = s->pos.y;

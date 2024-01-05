@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 #include <math.h>
+#include <time.h>
 
 #define WIDTH 480
 #define HEIGHT 368
@@ -17,8 +18,8 @@ enum KeyPress
 
 enum Difficulty
 {
-    EASY = 200,
-    MEDIUM = 150,
+    EASY = 250,
+    MEDIUM = 100,
     HARD = 50
 };
 
@@ -34,6 +35,7 @@ SDL_Renderer *gRenderer = NULL;
 
 SDL_Rect gridRect = {(int)NULL,(int)NULL,16,16};
 SDL_Rect snakeRect = {(int)NULL, (int)NULL, 16,16};
+SDL_Rect foodRect = {(int)NULL, (int)NULL, 16,16};
 
 unsigned int lastMoved = 0;
 
@@ -51,14 +53,38 @@ typedef struct
     unsigned int score;
 } Snake;
 
+typedef struct
+{
+    Position pos;
+} Food;
+
+typedef struct Node
+{
+    int value;
+    struct Node *next;
+}node_t;
+
 void handleKeyEvent(SDL_Event *, Snake *);
 void move(Snake *);
 void renderSnake(Snake *);
 void renderGrid();
 
+void placeFood(Food *);
+void renderFood(Food *);
+
+bool checkCollision(SDL_Rect, SDL_Rect);
+
+node_t *create_new_node(int);
+void printlist(node_t *);
+
 int main(int argc, char *argv[])
 {
-    Snake playerSnake = {{0,0}, {0,0}, {(int)NULL, (int)NULL}, 0};
+
+    Snake playerSnake = {{((WIDTH/16) / 2) * 16,((HEIGHT/16) / 2) * 16}, {0,0}, {(int)NULL, (int)NULL}, 0,};
+    Food food = {0,0};
+
+    /*Place first piece of food*/
+    placeFood(&food);
 
     /*Start up SDL and create window*/
     if(!init())
@@ -69,9 +95,11 @@ int main(int argc, char *argv[])
     {
         /*Update the surface*/
         SDL_UpdateWindowSurface(gWindow);
-        /*Event handling*/
+
         SDL_Event e;
         bool quit = false;
+
+        /*Event handling*/
         while(!quit)
         {
             while(SDL_PollEvent(&e))
@@ -91,6 +119,13 @@ int main(int argc, char *argv[])
             renderGrid();
             move(&playerSnake);
             renderSnake(&playerSnake);
+
+            if(checkCollision(snakeRect, foodRect))
+            {
+                placeFood(&food);
+            }
+            
+            renderFood(&food);
 
             /*Update Screen*/
             SDL_RenderPresent(gRenderer);
@@ -211,4 +246,53 @@ void renderGrid()
             SDL_RenderDrawRect(gRenderer, &gridRect);
         }
     }
+}
+
+void placeFood(Food *f)
+{
+    /*initialize rand*/
+    srand(time(NULL));
+
+    f->pos.x = (rand() % WIDTH / 16) * 16;
+    f->pos.y = (rand() % HEIGHT / 16) * 16;
+
+    printf("(%d, %d)\n", f->pos.x, f->pos.y);
+}
+
+void renderFood(Food *f)
+{
+    foodRect.x = f->pos.x;
+    foodRect.y = f->pos.y;
+
+    SDL_SetRenderDrawColor(gRenderer, 0x1C, 0xFC, 0x3, 0xFF);
+    SDL_RenderFillRect(gRenderer, &foodRect);
+}
+
+bool checkCollision(SDL_Rect a, SDL_Rect b)
+{
+    if(a.x == b.x && a.y == b.y)
+    {
+        return true;
+    }
+    return false;
+}
+
+node_t *create_new_node(int value)
+{
+    node_t *result = malloc(sizeof(node_t));
+    result->value = value;
+    result->next = NULL;
+    return result;
+}
+
+void printlist(node_t *head)
+{
+    node_t *temp = head;
+
+    while(temp != NULL)
+    {
+        printf("%d - ", temp->value);
+        temp = temp->next;
+    }
+    printf("\n");
 }

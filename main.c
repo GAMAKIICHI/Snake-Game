@@ -60,7 +60,7 @@ typedef struct
 
 typedef struct Node
 {
-    int value;
+    Position value;
     struct Node *next;
 }node_t;
 
@@ -74,7 +74,7 @@ void renderFood(Food *);
 
 bool checkCollision(SDL_Rect, SDL_Rect);
 
-node_t *create_new_node(int);
+node_t *create_new_node(Position);
 void printlist(node_t *);
 
 int main(int argc, char *argv[])
@@ -251,7 +251,7 @@ void renderGrid()
 void placeFood(Food *f)
 {
     /*initialize rand*/
-    srand(time(NULL));
+    srand(SDL_GetTicks());
 
     f->pos.x = (rand() % WIDTH / 16) * 16;
     f->pos.y = (rand() % HEIGHT / 16) * 16;
@@ -277,7 +277,7 @@ bool checkCollision(SDL_Rect a, SDL_Rect b)
     return false;
 }
 
-node_t *create_new_node(int value)
+node_t *create_new_node(Position value)
 {
     node_t *result = malloc(sizeof(node_t));
     result->value = value;

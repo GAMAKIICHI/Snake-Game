@@ -18,9 +18,9 @@ enum KeyPress
 
 enum Difficulty
 {
-    EASY = 250,
-    MEDIUM = 100,
-    HARD = 50
+    EASY = 50,
+    MEDIUM = 30,
+    HARD = 25
 };
 
 /*Starts up SDL and creates window*/
@@ -45,11 +45,17 @@ typedef struct
     int y;
 } Position;
 
+typedef struct Node
+{
+    Position value;
+    struct Node *next;
+}node_t;
+
 typedef struct
 {
     Position pos;
     Position sVel;
-    Position tail[(WIDTH / 16) * (HEIGHT / 16)];
+    node_t *body;
     unsigned int score;
 } Snake;
 
@@ -57,12 +63,6 @@ typedef struct
 {
     Position pos;
 } Food;
-
-typedef struct Node
-{
-    Position value;
-    struct Node *next;
-}node_t;
 
 void handleKeyEvent(SDL_Event *, Snake *);
 void move(Snake *);
@@ -80,8 +80,11 @@ void printlist(node_t *);
 int main(int argc, char *argv[])
 {
 
-    Snake playerSnake = {{((WIDTH/16) / 2) * 16,((HEIGHT/16) / 2) * 16}, {0,0}, {(int)NULL, (int)NULL}, 0,};
+    Snake playerSnake = {{((WIDTH/16) / 2) * 16,((HEIGHT/16) / 2) * 16}, {0,0}};
     Food food = {0,0};
+
+    node_t *test;
+    node_t *temp;
 
     /*Place first piece of food*/
     placeFood(&food);
@@ -122,6 +125,7 @@ int main(int argc, char *argv[])
 
             if(checkCollision(snakeRect, foodRect))
             {
+                printlist(playerSnake.body);
                 placeFood(&food);
             }
             
@@ -216,11 +220,13 @@ void handleKeyEvent(SDL_Event *e, Snake *s)
 void move(Snake *s)
 {
     unsigned int currentTime = SDL_GetTicks();
-    
-    if(currentTime - lastMoved >= HARD)
+    node_t *temp;
+
+    if(currentTime - lastMoved >= EASY)
     {
         s->pos.x += s->sVel.x * 16;
         s->pos.y += s->sVel.y * 16;
+
         lastMoved = currentTime;
     }
 }
@@ -256,7 +262,7 @@ void placeFood(Food *f)
     f->pos.x = (rand() % WIDTH / 16) * 16;
     f->pos.y = (rand() % HEIGHT / 16) * 16;
 
-    printf("(%d, %d)\n", f->pos.x, f->pos.y);
+    //printf("(%d, %d)\n", f->pos.x, f->pos.y);
 }
 
 void renderFood(Food *f)
@@ -291,7 +297,7 @@ void printlist(node_t *head)
 
     while(temp != NULL)
     {
-        printf("%d - ", temp->value);
+        printf("[%d, %d] ", temp->value.x, temp->value.y);
         temp = temp->next;
     }
     printf("\n");

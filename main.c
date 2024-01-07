@@ -75,16 +75,19 @@ void renderFood(Food *);
 bool checkCollision(SDL_Rect, SDL_Rect);
 
 node_t *create_new_node(Position);
+void updateSnakeHead(node_t *, Position);
 void printlist(node_t *);
+
+void renderBody(Snake *);
 
 int main(int argc, char *argv[])
 {
 
-    Snake playerSnake = {{((WIDTH/16) / 2) * 16,((HEIGHT/16) / 2) * 16}, {0,0}};
-    Food food = {0,0};
+    Position startPos = {((WIDTH/16) / 2) * 16,((HEIGHT/16) / 2) * 16};
+    node_t *head = create_new_node(startPos);
 
-    node_t *test;
-    node_t *temp;
+    Snake playerSnake = {startPos, {0,0}, head, 0};
+    Food food = {0,0};
 
     /*Place first piece of food*/
     placeFood(&food);
@@ -125,10 +128,17 @@ int main(int argc, char *argv[])
 
             if(checkCollision(snakeRect, foodRect))
             {
-                printlist(playerSnake.body);
+                /*Add new body node*/
+                node_t *newBody = create_new_node(playerSnake.pos);
+                newBody->next = playerSnake.body;
+                playerSnake.body = newBody;
+
                 placeFood(&food);
             }
             
+            renderBody(&playerSnake);
+            printlist(playerSnake.body);
+
             renderFood(&food);
 
             /*Update Screen*/
@@ -220,12 +230,13 @@ void handleKeyEvent(SDL_Event *e, Snake *s)
 void move(Snake *s)
 {
     unsigned int currentTime = SDL_GetTicks();
-    node_t *temp;
 
     if(currentTime - lastMoved >= EASY)
     {
         s->pos.x += s->sVel.x * 16;
         s->pos.y += s->sVel.y * 16;
+
+        updateSnakeHead(s->body, s->pos);
 
         lastMoved = currentTime;
     }
@@ -261,8 +272,6 @@ void placeFood(Food *f)
 
     f->pos.x = (rand() % WIDTH / 16) * 16;
     f->pos.y = (rand() % HEIGHT / 16) * 16;
-
-    //printf("(%d, %d)\n", f->pos.x, f->pos.y);
 }
 
 void renderFood(Food *f)
@@ -285,20 +294,56 @@ bool checkCollision(SDL_Rect a, SDL_Rect b)
 
 node_t *create_new_node(Position value)
 {
+    /*allocate memory for new node*/
     node_t *result = malloc(sizeof(node_t));
+
     result->value = value;
     result->next = NULL;
     return result;
+}
+
+void updateSnakeHead(node_t *head, Position newPos)
+{
+    if(head == NULL)
+    {
+        return;
+    }
+
+    node_t *current = head;
+
+    while(current->next != NULL)
+    {
+        current = current->next;
+    }
+
+    current->value = newPos;
 }
 
 void printlist(node_t *head)
 {
     node_t *temp = head;
 
+    system("cls"); /*clear console*/
     while(temp != NULL)
     {
-        printf("[%d, %d] ", temp->value.x, temp->value.y);
+        printf("[%d, %d]->", temp->value.x, temp->value.y);
         temp = temp->next;
     }
-    printf("\n");
+
+    printf("NULL\n");
+}
+
+void renderBody(Snake *s)
+{
+    node_t *temp = s->body;
+
+    while(temp != NULL)
+    {
+        snakeRect.x = temp->value.x;
+        snakeRect.y = temp->value.y;
+
+        SDL_SetRenderDrawColor(gRenderer, 0x1C, 0xFC, 0x3, 0xFF);
+        SDL_RenderFillRect(gRenderer, &snakeRect);
+        temp = temp->next;
+    }
 }

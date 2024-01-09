@@ -53,9 +53,8 @@ typedef struct Node
 
 typedef struct
 {
-    Position pos;
-    Position sVel;
     node_t *body;
+    Position sVel;
     unsigned int score;
 } Snake;
 
@@ -75,19 +74,43 @@ void renderFood(Food *);
 bool checkCollision(SDL_Rect, SDL_Rect);
 
 node_t *create_new_node(Position);
-void updateSnakeHead(node_t *, Position);
+void insertNodeAtEnd(node_t *, Position);
+void shift(node_t *);
 void printlist(node_t *);
 
 void renderBody(Snake *);
 
+void testBody()
+{
+    node_t *head = NULL;
+    node_t *temp;
+
+    head = create_new_node((Position){0,0});
+
+    for(int i = 1; i < 10; i++)
+    {
+        if(head == NULL)
+            return;
+
+        temp = head;
+        while(temp->next != NULL)
+        {
+            temp = temp->next;
+        }
+        temp->next = create_new_node((Position){i,i});
+    }
+    printlist(head);
+}
+
 int main(int argc, char *argv[])
 {
 
-    Position startPos = {((WIDTH/16) / 2) * 16,((HEIGHT/16) / 2) * 16};
-    node_t *head = create_new_node(startPos);
+    node_t *startPos = create_new_node((Position){((WIDTH/16)/2) * 16, ((HEIGHT/16)/2) * 16});
 
-    Snake playerSnake = {startPos, {0,0}, head, 0};
+    Snake playerSnake = {startPos, {0,0}, 0};
     Food food = {0,0};
+
+    testBody()
 
     /*Place first piece of food*/
     placeFood(&food);
@@ -126,18 +149,18 @@ int main(int argc, char *argv[])
             move(&playerSnake);
             renderSnake(&playerSnake);
 
+            /*Check whether the snake head has collided with food*/
             if(checkCollision(snakeRect, foodRect))
             {
                 /*Add new body node*/
-                node_t *newBody = create_new_node(playerSnake.pos);
-                newBody->next = playerSnake.body;
-                playerSnake.body = newBody;
-
+                insertNodeAtEnd(playerSnake.body, playerSnake.body->value);
                 placeFood(&food);
             }
             
+            // printlist(playerSnake.body);
+
             renderBody(&playerSnake);
-            printlist(playerSnake.body);
+            //printlist(playerSnake.body);
 
             renderFood(&food);
 
@@ -233,10 +256,9 @@ void move(Snake *s)
 
     if(currentTime - lastMoved >= EASY)
     {
-        s->pos.x += s->sVel.x * 16;
-        s->pos.y += s->sVel.y * 16;
-
-        updateSnakeHead(s->body, s->pos);
+        /*updates head of linked list that stores pos of head of snake*/
+        s->body->value.x += s->sVel.x * 16;
+        s->body->value.y += s->sVel.y * 16;
 
         lastMoved = currentTime;
     }
@@ -244,8 +266,8 @@ void move(Snake *s)
 
 void renderSnake(Snake *s)
 {
-    snakeRect.x = s->pos.x;
-    snakeRect.y = s->pos.y;
+    snakeRect.x = s->body->value.x;
+    snakeRect.y = s->body->value.y;
 
     SDL_SetRenderDrawColor(gRenderer, 0x1C, 0xFC, 0x3, 0xFF);
     SDL_RenderFillRect(gRenderer, &snakeRect);
@@ -302,23 +324,6 @@ node_t *create_new_node(Position value)
     return result;
 }
 
-void updateSnakeHead(node_t *head, Position newPos)
-{
-    if(head == NULL)
-    {
-        return;
-    }
-
-    node_t *current = head;
-
-    while(current->next != NULL)
-    {
-        current = current->next;
-    }
-
-    current->value = newPos;
-}
-
 void printlist(node_t *head)
 {
     node_t *temp = head;
@@ -346,4 +351,49 @@ void renderBody(Snake *s)
         SDL_RenderFillRect(gRenderer, &snakeRect);
         temp = temp->next;
     }
+}
+
+/*
+This functions finds the last pos in body 
+of the snake, and adds a new node for body piece.
+
+function: insertNodeAtEnd
+param: head, ptr to body of snake
+       pos, current pos when added to body
+*/
+
+void insertNodeAtEnd(node_t *head, Position pos)
+{
+    node_t *temp;
+
+    if(head == NULL)
+        return;
+
+    temp = head;
+
+    /*this goes through the linked list till it reaches the last element*/
+    while(temp->next != NULL)
+    {
+        temp = temp->next;
+    }
+    temp->next = create_new_node(pos);
+}
+
+void shift(node_t *body)
+{
+    if(body == NULL)
+    {
+        return;
+    }
+
+    node_t *temp = body;
+    node_t *prev = temp->next;
+
+    while(temp != NULL)
+    {
+        prev = temp;
+        temp = temp->next;
+        prev = temp->next;
+    }
+
 }

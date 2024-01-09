@@ -66,6 +66,7 @@ typedef struct
 void handleKeyEvent(SDL_Event *, Snake *);
 void move(Snake *);
 void renderSnake(node_t *);
+void renderBody(node_t *);
 void renderGrid();
 
 void placeFood(Food *);
@@ -107,8 +108,6 @@ int main(int argc, char *argv[])
 
     Snake playerSnake = {startPos, {0,0}, 0};
     Food food = {0,0};
-
-    testBody();
 
     /*Place first piece of food*/
     placeFood(&food);
@@ -157,18 +156,19 @@ int main(int argc, char *argv[])
                 placeFood(&food);
             }
 
-            if(playerSnake.body != playerSnake.body->next)
-            {
-                shift(playerSnake.body);
-            }
-            printlist(playerSnake.body);    
+            renderBody(playerSnake.body);
 
-            //printlist(playerSnake.body);
+            // if(playerSnake.body != playerSnake.body->next)
+            // {
+            //     shift(playerSnake.body);
+            // }
+            printlist(playerSnake.body);    
 
             renderFood(&food);
 
             /*Update Screen*/
             SDL_RenderPresent(gRenderer);
+            // system("cls"); /*clear console*/
         }
     }
     
@@ -268,24 +268,40 @@ void move(Snake *s)
 }
 
 /*
-This functions renders the body of the snake.
-This works by ittering through each pos of the snake 
-and rendering those one by one.
+This functions renders the head of the snake.
 
 function: renderSnake
 param: body, ptr to body of snake
 */
 
-void renderSnake(node_t *body)
+void renderSnake(node_t *head)
 {
-    node_t *temp = body;
+    snakeRect.x = head->value.x;
+    snakeRect.y = head->value.y;
+
+    SDL_SetRenderDrawColor(gRenderer, 0x1C, 0xFC, 0x3, 0xFF);
+    SDL_RenderFillRect(gRenderer, &snakeRect);
+}
+
+/*
+This functions renders the body of the snake.
+This works by ittering through each pos of the snake 
+and rendering those one by one.
+
+function: renderBody
+param: body, ptr to body of snake
+*/
+
+void renderBody(node_t *body)
+{
+    node_t *temp = body->next;
 
     while(temp != NULL)
     {
         snakeRect.x = temp->value.x;
         snakeRect.y = temp->value.y;
 
-        SDL_SetRenderDrawColor(gRenderer, 0x1C, 0xFC, 0x3, 0xFF);
+        SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x0, 0x0, 0xFF);
         SDL_RenderFillRect(gRenderer, &snakeRect);
         temp = temp->next;
     }
@@ -364,8 +380,6 @@ node_t *create_new_node(Position value)
 void printlist(node_t *head)
 {
     node_t *temp = head;
-
-    system("cls"); /*clear console*/
     while(temp != NULL)
     {
         printf("[%d, %d]->", temp->value.x, temp->value.y);

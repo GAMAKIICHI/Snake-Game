@@ -98,6 +98,8 @@ void testBody()
         }
         temp->next = create_new_node((Position){i,i});
     }
+
+    shift(head);
     printlist(head);
 }
 
@@ -108,6 +110,8 @@ int main(int argc, char *argv[])
 
     Snake playerSnake = {startPos, {0,0}, 0};
     Food food = {0,0};
+
+    testBody();
 
     /*Place first piece of food*/
     placeFood(&food);
@@ -157,12 +161,15 @@ int main(int argc, char *argv[])
             }
 
             renderBody(playerSnake.body);
-
-            // if(playerSnake.body != playerSnake.body->next)
-            // {
-            //     shift(playerSnake.body);
-            // }
-            printlist(playerSnake.body);    
+            
+            if(playerSnake.body->next != NULL)
+            {
+                /*check whether the pos of the head of the snake does is not the same as the first pos in the body*/
+                if(playerSnake.body->value.x != playerSnake.body->next->value.x && playerSnake.body->value.y != playerSnake.body->next->value.y)
+                {
+                    shift(playerSnake.body);
+                }
+            }
 
             renderFood(&food);
 
@@ -425,23 +432,26 @@ param: body, ptr to body of snake
 
 void shift(node_t *body)
 {
-    if(body == NULL)
+    if(body == NULL || body->next == NULL)
     {
         return;
     }
 
     /*temp starts at the second pos in body. We dont want to update the head. Just the body*/
-    node_t *temp;
-    node_t *prev;
+    node_t *head = body;
+    node_t *temp = body->next;
+    Position prevPos = body->next->value;
 
-    temp = body->next;
-    prev = body;
+    temp->value = head->value;
+    head = head->next;
+    temp = temp->next;
 
-    while(temp != NULL)
-    {
-        temp->value = prev->value;
-        temp = temp->next;
-        prev = prev->next;
-    }
+    temp->value = prevPos;
 
+    // while(current != NULL)
+    // {
+    //     current->value = prev->value;
+    //     current = current->next;
+    //     prev = prev->next;
+    // }
 }

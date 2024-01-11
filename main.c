@@ -148,6 +148,16 @@ int main(int argc, char *argv[])
 
             renderGrid();
 
+            if(playerSnake.body->next != NULL)
+            {
+                /*check whether the pos of the head of the snake does is not the same as the first pos in the body*/
+                if(playerSnake.body->value.x != playerSnake.body->next->value.x && playerSnake.body->value.y != playerSnake.body->next->value.y)
+                {
+                    shift(playerSnake.body);
+                    printlist(playerSnake.body);
+                }
+            }
+
             /*update the pos of the snake*/
             move(&playerSnake);
             renderSnake(playerSnake.body);
@@ -161,15 +171,6 @@ int main(int argc, char *argv[])
             }
 
             renderBody(playerSnake.body);
-            
-            if(playerSnake.body->next != NULL)
-            {
-                /*check whether the pos of the head of the snake does is not the same as the first pos in the body*/
-                if(playerSnake.body->value.x != playerSnake.body->next->value.x && playerSnake.body->value.y != playerSnake.body->next->value.y)
-                {
-                    shift(playerSnake.body);
-                }
-            }
 
             renderFood(&food);
 
@@ -437,21 +438,23 @@ void shift(node_t *body)
         return;
     }
 
+    node_t *temp = body;
+    Position shiftedPos[1000];
+    int i = 0;
+
+    while(temp != NULL)
+    {
+        shiftedPos[i++] = temp->value;
+        temp = temp->next;
+    }
+
     /*temp starts at the second pos in body. We dont want to update the head. Just the body*/
-    node_t *head = body;
-    node_t *temp = body->next;
-    Position prevPos = body->next->value;
+    temp = body->next;
+    i = 0;
 
-    temp->value = head->value;
-    head = head->next;
-    temp = temp->next;
-
-    temp->value = prevPos;
-
-    // while(current != NULL)
-    // {
-    //     current->value = prev->value;
-    //     current = current->next;
-    //     prev = prev->next;
-    // }
+    while(temp != NULL)
+    {
+        temp->value = shiftedPos[i++];
+        temp = temp->next;
+    }
 }

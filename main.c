@@ -75,9 +75,11 @@ void renderFood(Food *);
 bool checkCollision(SDL_Rect, SDL_Rect);
 
 node_t *create_new_node(Position);
-void insertNodeAtEnd(node_t *, Position);
+void insertNodeAtEnd(node_t *);
 void shift(node_t *);
 void printlist(node_t *);
+
+bool isInNewGrid(Position , Position);
 
 void testBody()
 {
@@ -99,8 +101,12 @@ void testBody()
         temp->next = create_new_node((Position){i,i});
     }
 
-    shift(head);
-    printlist(head);
+    for(int i = 0; i < 10; i++)
+    {
+        shift(head);
+        head->value = (Position){i,i};
+        printlist(head);
+    }
 }
 
 int main(int argc, char *argv[])
@@ -110,8 +116,6 @@ int main(int argc, char *argv[])
 
     Snake playerSnake = {startPos, {0,0}, 0};
     Food food = {0,0};
-
-    testBody();
 
     /*Place first piece of food*/
     placeFood(&food);
@@ -146,33 +150,32 @@ int main(int argc, char *argv[])
             SDL_SetRenderDrawColor(gRenderer, 0x0, 0x0, 0x0, 0x0);
             SDL_RenderClear(gRenderer);
 
-            renderGrid();
+            renderFood(&food);
 
-            if(playerSnake.body->next != NULL)
-            {
-                /*check whether the pos of the head of the snake does is not the same as the first pos in the body*/
-                if(playerSnake.body->value.x != playerSnake.body->next->value.x && playerSnake.body->value.y != playerSnake.body->next->value.y)
-                {
-                    shift(playerSnake.body);
-                    printlist(playerSnake.body);
-                }
-            }
+            // if(playerSnake.body->next != NULL)
+            // {
+            //     /*check whether the pos of the head of the snake does is not the same as the first pos in the body*/
+            //     if(isInNewGrid(playerSnake.body->next->value, playerSnake.body->value))
+            //     {
+            //         shift(playerSnake.body);    
+            //     }
+            // }
 
             /*update the pos of the snake*/
             move(&playerSnake);
             renderSnake(playerSnake.body);
+            renderBody(playerSnake.body);
 
             /*Check whether the snake head has collided with food*/
             if(checkCollision(snakeRect, foodRect))
             {
                 /*Add new body node*/
-                insertNodeAtEnd(playerSnake.body, playerSnake.body->value);
+                insertNodeAtEnd(playerSnake.body);
                 placeFood(&food);
             }
 
-            renderBody(playerSnake.body);
-
-            renderFood(&food);
+            // printlist(playerSnake.body);
+            renderGrid();
 
             /*Update Screen*/
             SDL_RenderPresent(gRenderer);
@@ -235,25 +238,29 @@ void closeWindow()
 }
 
 void handleKeyEvent(SDL_Event *e, Snake *s)
-{
-    if(e->type == SDL_KEYDOWN && e->key.repeat == 0)
+{  
+    if(e->type == SDL_KEYDOWN)
     {
+        /*this is needed so sVel doesnt go over 16*/
+        s->sVel.x = 0;
+        s->sVel.y = 0;
+
         switch(e->key.keysym.sym)
         {
             case SDLK_UP:
-                s->sVel.y -= 1;
+                s->sVel.y -= 16;
                 s->sVel.x = 0;
                 break;
             case SDLK_DOWN:
-                s->sVel.y += 1;
+                s->sVel.y += 16;
                 s->sVel.x = 0;
                 break;
             case SDLK_RIGHT:
-                s->sVel.x += 1;
+                s->sVel.x += 16;
                 s->sVel.y = 0;
                 break;
             case SDLK_LEFT:
-                s->sVel.x -= 1;
+                s->sVel.x -= 16;
                 s->sVel.y = 0;
                 break;
         }
@@ -268,10 +275,15 @@ void move(Snake *s)
     if(currentTime - lastMoved >= EASY)
     {
         /*updates head of linked list that stores pos of head of snake*/
-        s->body->value.x += s->sVel.x * 16;
-        s->body->value.y += s->sVel.y * 16;
+        s->body->value.x += s->sVel.x;
+        s->body->value.y += s->sVel.y;
 
         lastMoved = currentTime;
+    }
+
+    if (s->body->next != NULL && isInNewGrid(s->body->next->value, s->body->value))
+    {
+        shift(s->body);  
     }
 }
 
@@ -406,9 +418,10 @@ param: head, ptr to body of snake
        pos, current pos when added to body
 */
 
-void insertNodeAtEnd(node_t *head, Position pos)
+void insertNodeAtEnd(node_t *head)
 {
     node_t *temp;
+    Position newPos;
 
     if(head == NULL)
         return;
@@ -419,8 +432,9 @@ void insertNodeAtEnd(node_t *head, Position pos)
     while(temp->next != NULL)
     {
         temp = temp->next;
+        newPos = temp->value;
     }
-    temp->next = create_new_node(pos);
+    temp->next = create_new_node(newPos);
 }
 
 /*
@@ -448,6 +462,8 @@ void shift(node_t *body)
         temp = temp->next;
     }
 
+    printf("\n");
+
     /*temp starts at the second pos in body. We dont want to update the head. Just the body*/
     temp = body->next;
     i = 0;
@@ -457,4 +473,20 @@ void shift(node_t *body)
         temp->value = shiftedPos[i++];
         temp = temp->next;
     }
+}
+
+bool isInNewGrid(Position prev, Position current)
+{
+
+    /* These variables are divided by 16 to see the exact grid the snake head is currently in */
+    prev.x = prev.x / 16;
+    prev.y = prev.y / 16;
+
+    current.x = current.x / 16;
+    current.y = current.y / 16;
+
+    if (prev.x != current.x || prev.y != current.y)
+        return true;
+    return false;
+
 }

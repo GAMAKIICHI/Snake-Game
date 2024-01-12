@@ -55,3 +55,8 @@ dkms.conf
 .bmp
 .png
 .jpg
+
+#sdl2 files
+/src/include/SDL2/*
+/src/lib/cmake/*
+/src/lib/pkgconfig/*

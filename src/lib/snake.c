@@ -6,6 +6,7 @@ SDL_Renderer *gRenderer = NULL;
 
 SDL_Rect foodRect = {(int)NULL, (int)NULL, 16,16};
 SDL_Rect snakeRect = {(int)NULL, (int)NULL, 16,16};
+SDL_Rect bodyRect = {(int)NULL, (int)NULL, 16,16};
 
 unsigned int lastMoved = 0;
 
@@ -44,13 +45,36 @@ void move(Snake *s)
 {
     unsigned int currentTime = SDL_GetTicks();
 
-    if(currentTime - lastMoved >= EASY)
+    if(currentTime - lastMoved >= s->difficulty)
     {
         /*updates head of linked list that stores pos of head of snake*/
         s->body->value.x += s->sVel.x;
         s->body->value.y += s->sVel.y;
 
         lastMoved = currentTime;
+    }
+
+    /*
+    These are the boundaries for each difficulty.
+    EASY DIFFICULTY: If you hit the end of the grid you will end up on the opposite of the grid
+    MEDIUM/ HARD DIFFICULTY: If you hit the end of the grid = GAME OVER
+    */
+
+    switch(s->difficulty)
+    {
+        case EASY:
+            if(s->body->value.x > WIDTH)
+                s->body->value.x = 0;
+            else if(s->body->value.x < 0)
+                s->body->value.x = WIDTH;
+            else if(s->body->value.y > HEIGHT)
+                s->body->value.y = 0;
+            else if(s->body->value.y < 0)
+                s->body->value.y = HEIGHT;
+            break;
+        case MEDIUM:
+        case HARD:
+            break;
     }
 
     if (s->body->next != NULL && isInNewGrid(s->body->next->value, s->body->value))
@@ -66,7 +90,7 @@ function: renderSnake
 param: body, ptr to body of snake
 */
 
-void renderSnake(node_t *head)
+void renderSnakeHead(node_t *head)
 {
     snakeRect.x = head->value.x;
     snakeRect.y = head->value.y;
@@ -90,11 +114,11 @@ void renderBody(node_t *body)
 
     while(temp != NULL)
     {
-        snakeRect.x = temp->value.x;
-        snakeRect.y = temp->value.y;
+        bodyRect.x = temp->value.x;
+        bodyRect.y = temp->value.y;
 
         SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x0, 0x0, 0xFF);
-        SDL_RenderFillRect(gRenderer, &snakeRect);
+        SDL_RenderFillRect(gRenderer, &bodyRect);
         temp = temp->next;
     }
 }

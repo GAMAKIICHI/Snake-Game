@@ -29,6 +29,7 @@ typedef struct
     node_t *body;
     Position sVel;
     unsigned int score;
+    enum Difficulty difficulty;
 } Snake;
 
 typedef struct
@@ -40,7 +41,7 @@ extern unsigned int lastMoved;
 
 void handleKeyEvent(SDL_Event *, Snake *);
 void move(Snake *);
-void renderSnake(node_t *);
+void renderSnakeHead(node_t *);
 void renderBody(node_t *);
 
 bool checkCollision(SDL_Rect, SDL_Rect);

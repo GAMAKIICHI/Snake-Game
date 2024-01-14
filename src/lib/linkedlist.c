@@ -72,8 +72,6 @@ void shift(node_t *body)
         temp = temp->next;
     }
 
-    printf("\n");
-
     /*temp starts at the second pos in body. We dont want to update the head. Just the body*/
     temp = body->next;
     i = 0;

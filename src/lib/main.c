@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 {
     node_t *startPos = create_new_node((Position){((WIDTH/16)/2) * 16, ((HEIGHT/16)/2) * 16});
 
-    Snake playerSnake = {startPos, {0,0}, 0};
+    Snake playerSnake = {startPos, {0,0}, 0, EASY};
     Food food = {0,0};
 
     /*Place first piece of food*/
@@ -49,20 +49,9 @@ int main(int argc, char *argv[])
             SDL_SetRenderDrawColor(gRenderer, 0x0, 0x0, 0x0, 0x0);
             SDL_RenderClear(gRenderer);
 
-            renderFood(&food);
-
-            // if(playerSnake.body->next != NULL)
-            // {
-            //     /*check whether the pos of the head of the snake does is not the same as the first pos in the body*/
-            //     if(isInNewGrid(playerSnake.body->next->value, playerSnake.body->value))
-            //     {
-            //         shift(playerSnake.body);    
-            //     }
-            // }
-
             /*update the pos of the snake*/
             move(&playerSnake);
-            renderSnake(playerSnake.body);
+            renderSnakeHead(playerSnake.body);
             renderBody(playerSnake.body);
 
             /*Check whether the snake head has collided with food*/
@@ -75,6 +64,7 @@ int main(int argc, char *argv[])
 
             // printlist(playerSnake.body);
             renderGrid();
+            renderFood(&food);
 
             /*Update Screen*/
             SDL_RenderPresent(gRenderer);

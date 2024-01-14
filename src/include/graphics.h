@@ -15,5 +15,6 @@ extern SDL_Renderer *gRenderer;
 extern SDL_Rect gridRect;
 extern SDL_Rect foodRect;
 extern SDL_Rect snakeRect;
+extern SDL_Rect bodyRect;
 
 #endif

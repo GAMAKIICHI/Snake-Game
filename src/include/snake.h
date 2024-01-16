@@ -1,12 +1,12 @@
+#ifndef SNAKE_H
+#define SNAKE_H
+
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "SDL2/SDL_events.h"
 #include "SDL2/SDL_timer.h"
 #include "graphics.h"
-#include "position.h"
-#include "linkedlist.h"
-
-#ifndef SNAKE_H
-#define SNAKE_H
 
 enum KeyPress
 {
@@ -24,6 +24,17 @@ enum Difficulty
     HARD = 25
 };
 
+typedef struct {
+    int x;
+    int y;
+} Position;
+
+typedef struct Node
+{
+    Position value;
+    struct Node *next;
+}node_t;
+
 typedef struct
 {
     node_t *body;
@@ -38,6 +49,8 @@ typedef struct
 } Food;
 
 extern unsigned int lastMoved;
+extern Snake playerSnake;
+extern Food food;
 
 void handleKeyEvent(SDL_Event *, Snake *);
 void move(Snake *);
@@ -49,5 +62,15 @@ bool isInNewGrid(Position , Position);
 
 void placeFood(Food *);
 void renderFood(Food *);
+
+bool isGameOver(Snake);
+
+node_t *create_new_node(Position);
+void insertNodeAtEnd(node_t *);
+void shift(node_t *);
+void freeSnake(node_t *);
+
+void printlist(node_t *);
+void testBody();
 
 #endif

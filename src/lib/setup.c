@@ -36,6 +36,12 @@ bool init()
         }
     }
 
+    /*Initialize TTF*/
+    if(TTF_Init() < 0)
+    {
+        printf("TTF unable to initialize! TTF_Error: %s", TTF_GetError());
+    }
+
     return success;
 }
 

@@ -24,10 +24,27 @@ void gameScene()
 void gameOverScene()
 {
     TTF_Font *gfont = NULL;
-    gfont = TTF_OpenFont("fonts/munro.ttf", 16);
+    gfont = TTF_OpenFont("fonts/munro.ttf", 64);
+
+    SDL_Rect destinationRect = {0, 0, gScreenSurface->w, gScreenSurface->h};
+    SDL_RenderCopy(gRenderer, gTexture, NULL, &destinationRect);
+
+    if(gfont == NULL)
+    {
+        printf("unable in initialize font! TTF_Error: %s\n", TTF_GetError());
+    }
+
     gScreenSurface = TTF_RenderText_Solid(gfont, "Hello world", (SDL_Color){0x32, 0x32, 0xa8, 0xFF});
 
-    SDL_CreateTextureFromSurface(gRenderer, gScreenSurface);
+    if(gScreenSurface == NULL)
+    {
+        printf("unable to render text surface! SDL_Error: %s\n", SDL_GetError());
+    }
 
-    SDL_FreeSurface(gScreenSurface);
+    gTexture = SDL_CreateTextureFromSurface(gRenderer, gScreenSurface);
+
+    if(gTexture == NULL)
+    {
+        printf("unable to create texuture from surface! SDL_Error: %s\n", SDL_GetError());
+    }
 }

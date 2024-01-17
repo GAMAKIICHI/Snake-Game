@@ -5,6 +5,7 @@
 #include <SDL2/SDL.h>
 #include <graphics.h>
 #include <stdio.h>
+#include <SDL2/SDL_ttf.h>
 
 /*Starts up SDL and creates window*/
 bool init();

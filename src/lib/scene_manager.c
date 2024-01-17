@@ -24,5 +24,10 @@ void gameScene()
 void gameOverScene()
 {
     TTF_Font *gfont = NULL;
-    
+    gfont = TTF_OpenFont("fonts/munro.ttf", 16);
+    gScreenSurface = TTF_RenderText_Solid(gfont, "Hello world", (SDL_Color){0x32, 0x32, 0xa8, 0xFF});
+
+    SDL_CreateTextureFromSurface(gRenderer, gScreenSurface);
+
+    SDL_FreeSurface(gScreenSurface);
 }

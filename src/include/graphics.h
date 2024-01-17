@@ -11,7 +11,7 @@
 extern SDL_Window *gWindow;
 extern SDL_Surface *gScreenSurface; 
 extern SDL_Renderer *gRenderer;
-extern SDL_Surface *textSurface;
+extern SDL_Texture *gTexture;
 
 extern SDL_Rect gridRect;
 extern SDL_Rect foodRect;

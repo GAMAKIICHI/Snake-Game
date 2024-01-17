@@ -41,13 +41,16 @@ int main(int argc, char *argv[])
             SDL_SetRenderDrawColor(gRenderer, 0x0, 0x0, 0x0, 0x0);
             SDL_RenderClear(gRenderer);
 
-            if(!isGameOver(playerSnake))
-            {
-                gameScene();
-            }
+            // if(!isGameOver(playerSnake))
+            // {
+            //     gameScene();
+            // }
+
+            gameOverScene();
 
             /*Update Screen*/
             SDL_RenderPresent(gRenderer);
+
             // system("cls"); /*clear console*/
         }
     }

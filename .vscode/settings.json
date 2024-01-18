@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "sdl_render.h": "c",
-        "linkedlist.h": "c"
+        "linkedlist.h": "c",
+        "snake.h": "c"
     }
 }

@@ -1,5 +1,7 @@
 #include "scene_manager.h"
 
+FontSetting defaultFont = {"fonts/munro.ttf", 64, {0x7f, 0x03, 0xfc, 0xFF}};
+
 void gameScene()
 {
     /*update the pos of the snake*/
@@ -23,28 +25,10 @@ void gameScene()
 
 void gameOverScene()
 {
-    TTF_Font *gfont = NULL;
-    gfont = TTF_OpenFont("fonts/munro.ttf", 64);
+    char score[10];
+    sprintf(score, "SCORE: %d", 565);
 
-    SDL_Rect destinationRect = {0, 0, gScreenSurface->w, gScreenSurface->h};
-    SDL_RenderCopy(gRenderer, gTexture, NULL, &destinationRect);
+    renderText("Game Over", defaultFont.fontPath, defaultFont.fontSize, defaultFont.color, (WIDTH - gScreenSurface->w) / 2,96);
 
-    if(gfont == NULL)
-    {
-        printf("unable in initialize font! TTF_Error: %s\n", TTF_GetError());
-    }
-
-    gScreenSurface = TTF_RenderText_Solid(gfont, "Hello world", (SDL_Color){0x32, 0x32, 0xa8, 0xFF});
-
-    if(gScreenSurface == NULL)
-    {
-        printf("unable to render text surface! SDL_Error: %s\n", SDL_GetError());
-    }
-
-    gTexture = SDL_CreateTextureFromSurface(gRenderer, gScreenSurface);
-
-    if(gTexture == NULL)
-    {
-        printf("unable to create texuture from surface! SDL_Error: %s\n", SDL_GetError());
-    }
+    renderText(score, defaultFont.fontPath, 48, defaultFont.color, (WIDTH - gScreenSurface->w) / 2,20);
 }

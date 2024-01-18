@@ -12,6 +12,14 @@ typedef struct
 
 }Scenes;
 
+typedef struct
+{
+    char fontPath[1000];
+    int fontSize;
+    SDL_Color color;
+}FontSetting;
+
+
 void mainMenuScene();
 
 void gameScene();

@@ -28,7 +28,7 @@ void gameOverScene()
     char score[10];
     sprintf(score, "SCORE: %d", 565);
 
-    renderText("Game Over", defaultFont.fontPath, defaultFont.fontSize, defaultFont.color, (WIDTH - gScreenSurface->w) / 2,96);
+    renderText("Game Over", defaultFont.fontPath, defaultFont.fontSize, defaultFont.color, 0,20);
 
-    renderText(score, defaultFont.fontPath, 48, defaultFont.color, (WIDTH - gScreenSurface->w) / 2,20);
+    renderText(score, defaultFont.fontPath, 48, defaultFont.color, 0,120);
 }

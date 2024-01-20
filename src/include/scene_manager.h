@@ -19,11 +19,23 @@ typedef struct
     SDL_Color color;
 }FontSetting;
 
+typedef struct 
+{
+    int width;
+    int height;
+    int fontSize;
+    SDL_Color color;
+    SDL_Color focus;
+    
+}ButtonSettings;
 
-void mainMenuScene();
+
+void mainMenuScene(SDL_Keycode btn);
 
 void gameScene();
 
 void gameOverScene();
+
+SDL_Keycode handleButtonEvents(SDL_Event *e);
 
 #endif

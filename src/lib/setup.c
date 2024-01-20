@@ -32,7 +32,7 @@ bool init()
             {
                 SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
             }
-            gScreenSurface = SDL_GetWindowSurface(gWindow);
+            // gScreenSurface = SDL_GetWindowSurface(gWindow);
         }
     }
 

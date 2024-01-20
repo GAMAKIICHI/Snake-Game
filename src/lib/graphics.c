@@ -22,7 +22,6 @@ param: str, text that will be rendered
        posX, 
 */
 
-
 void renderText(char str[], char fontPath[], int fontSize, SDL_Color color, int posX, int posY)
 {
     SDL_Texture *tTexture = NULL;
@@ -50,12 +49,29 @@ void renderText(char str[], char fontPath[], int fontSize, SDL_Color color, int 
         printf("unable to create texuture from surface! SDL_Error: %s\n", SDL_GetError());
     }
 
-    SDL_Rect destinationRect = {((WIDTH - tSurface->w) / 2) + posX, posY, tSurface->w, tSurface->h};
+    SDL_Rect destinationRect = {centerSurface(tSurface) + posX, posY, tSurface->w, tSurface->h};
     SDL_RenderCopy(gRenderer, tTexture, NULL, &destinationRect);
 
     TTF_CloseFont(gfont);
     SDL_DestroyTexture(tTexture);
     SDL_FreeSurface(tSurface);
+}
+
+void renderButton(Button btn)
+{
+    SDL_Rect button = {(WIDTH - btn.width) / 2 + btn.posX, btn.posY, btn.width, btn.height};
+
+    /*This centers the text on the y axis of the button*/
+    int centerTextY = btn.posY + (btn.height - btn.fontSize) / 2;
+
+    SDL_SetRenderDrawColor(gRenderer, btn.color.r, btn.color.g, btn.color.b, btn.color.a);
+    SDL_RenderDrawRect(gRenderer, &button);
+    renderText(btn.str, "fonts/munro.ttf", btn.fontSize, btn.color, btn.posX, centerTextY);
+}
+
+int centerSurface(SDL_Surface *surface)
+{
+    return (WIDTH - surface->w) / 2;
 }
 
 void clear()

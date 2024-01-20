@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
 
         SDL_Event e;
         bool quit = false;
+        SDL_Keycode buttonEvent;
 
         /*Event handling*/
         while(!quit)
@@ -34,6 +35,7 @@ int main(int argc, char *argv[])
                     quit = true;
                 
                 handleKeyEvent(&e, &playerSnake);
+                buttonEvent = handleButtonEvents(&e);
 
             }
 
@@ -45,8 +47,14 @@ int main(int argc, char *argv[])
             // {
             //     gameScene();
             // }
+            // else
+            // {
+            //     SDL_FreeSurface(gScreenSurface);
+            //     gameOverScene();
+            // }
+            // gameOverScene();
 
-            gameOverScene();
+            mainMenuScene(buttonEvent);
 
             /*Update Screen*/
             SDL_RenderPresent(gRenderer);

@@ -1,7 +1,12 @@
 #include "scene_manager.h"
 
-FontSetting defaultFont = {"fonts/munro.ttf", 64, {0x1C, 0xFC, 0x3, 0xFF}};
-ButtonSettings defaultButton = {175, 64, 32, {0x1C, 0xFC, 0x3, 0xFF}, {0x93, 0xFF, 0x73, 0xFF}};
+static FontSetting defaultFont = {"fonts/munro.ttf", 64, {0x1C, 0xFC, 0x3, 0xFF}};
+
+static Button startBtn = {"START", 175, 64, 0, 200, 32, false, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
+static Button settingsBtn = {"SETTINGS", 175, 64, 0, 280, 32, false, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
+
+static Button playAgainBtn = {"PLAY AGAIN?", 175, 64, 0, 200, 32, false, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
+static Button exitBtn = {"EXIT", 175, 64, 0, 280, 32, false, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
 
 void gameScene()
 {
@@ -24,25 +29,28 @@ void gameScene()
     renderFood(&food);
 }
 
-void mainMenuScene(SDL_Keycode btn)
+int mainMenuScene(SDL_Keycode btn)
 {
     renderText("SNAKE", defaultFont.fontPath, defaultFont.fontSize, defaultFont.color, 0, 20);
 
     renderText("CONTROLS: ARROW KEYS", defaultFont.fontPath, 32, defaultFont.color, 0, 120);
 
-    Button startBtn = {"START", defaultButton.width, defaultButton.height, 0, 200, defaultButton.fontSize, false, defaultButton.color, defaultButton.color};
-    Button settingsBtn = {"SETTINGS", defaultButton.width, defaultButton.height, 0, 280, defaultButton.fontSize, false, defaultButton.color, defaultButton.color};
-
     if(btn == SDLK_UP)
-        startBtn.color = (SDL_Color){0xFF,0XFF,0XFF,0XFF};
-    else if(btn == SDLK_DOWN)  
-        settingsBtn.color = settingsBtn.focus;
-
+    {
+        startBtn.isFocus = true;
+        settingsBtn.isFocus = false;
+    }
+    else if(btn == SDLK_DOWN) 
+    {
+        settingsBtn.isFocus = true;
+        startBtn.isFocus = false;
+    } 
+        
     renderButton(startBtn);
     renderButton(settingsBtn);
 }
 
-void gameOverScene()
+int gameOverScene(SDL_Keycode btn)
 {
     char score[10];
 
@@ -52,10 +60,18 @@ void gameOverScene()
     renderText("GAME OVER", defaultFont.fontPath, defaultFont.fontSize, defaultFont.color, 0,20);
 
     renderText(score, defaultFont.fontPath, 48, defaultFont.color, 0,120);
-
-    Button playAgainBtn = {"PLAY AGAIN?", defaultButton.width, defaultButton.height, 0, 200, defaultButton.fontSize, false, defaultButton.color, defaultButton.color};
-    Button exitBtn = {"EXIT", defaultButton.width, defaultButton.height, 0, 280, defaultButton.fontSize, false, defaultButton.color, defaultButton.color};
     
+    if(btn == SDLK_UP)
+    {
+        playAgainBtn.isFocus = true;
+        exitBtn.isFocus = false;
+    }
+    else if(btn == SDLK_DOWN) 
+    {
+        exitBtn.isFocus = true;
+        playAgainBtn.isFocus = false;
+    } 
+
     renderButton(playAgainBtn);
     renderButton(exitBtn);
 }

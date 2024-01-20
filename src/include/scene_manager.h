@@ -30,11 +30,11 @@ typedef struct
 }ButtonSettings;
 
 
-void mainMenuScene(SDL_Keycode btn);
+int mainMenuScene(SDL_Keycode btn);
 
 void gameScene();
 
-void gameOverScene();
+int gameOverScene(SDL_Keycode btn);
 
 SDL_Keycode handleButtonEvents(SDL_Event *e);
 

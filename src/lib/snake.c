@@ -271,11 +271,12 @@ void shift(node_t *body)
 
 void freeSnake(node_t *head)
 {
-    node_t *temp = head;
-    while(temp != NULL)
+    node_t *tmp;
+    tmp = head;
+    while(tmp != NULL)
     {
-        free(temp);
-        temp = temp->next;
+        free(tmp);
+        tmp = tmp->next;
     }
 }
 

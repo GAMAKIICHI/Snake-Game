@@ -64,9 +64,19 @@ void renderButton(Button btn)
     /*This centers the text on the y axis of the button*/
     int centerTextY = btn.posY + (btn.height - btn.fontSize) / 2;
 
-    SDL_SetRenderDrawColor(gRenderer, btn.color.r, btn.color.g, btn.color.b, btn.color.a);
+    /*this changes the color of the button if its focused*/
+    if(btn.isFocus)
+    {
+        SDL_SetRenderDrawColor(gRenderer, btn.focus.r, btn.focus.g, btn.focus.b, btn.focus.a);
+        renderText(btn.str, "fonts/munro.ttf", btn.fontSize, btn.focus, btn.posX, centerTextY);
+    }
+    else
+    {
+        SDL_SetRenderDrawColor(gRenderer, btn.color.r, btn.color.g, btn.color.b, btn.color.a);
+        renderText(btn.str, "fonts/munro.ttf", btn.fontSize, btn.color, btn.posX, centerTextY);
+    }
+    
     SDL_RenderDrawRect(gRenderer, &button);
-    renderText(btn.str, "fonts/munro.ttf", btn.fontSize, btn.color, btn.posX, centerTextY);
 }
 
 int centerSurface(SDL_Surface *surface)

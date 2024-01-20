@@ -12,7 +12,6 @@
 #define HEIGHT 368
 
 extern SDL_Window *gWindow;
-extern SDL_Surface *gScreenSurface; 
 extern SDL_Renderer *gRenderer;
 
 extern SDL_Rect gridRect;

@@ -5,11 +5,9 @@
 
 int main(int argc, char *argv[])
 {
-    node_t *startPos = create_new_node((Position){((WIDTH/16)/2) * 16, ((HEIGHT/16)/2) * 16});
-    playerSnake.body = startPos;
 
-    /*Place first piece of food*/
-    placeFood(&food);
+    initSnake();
+    initFood();
 
     /*Start up SDL and create window*/
     if(!init())
@@ -34,7 +32,6 @@ int main(int argc, char *argv[])
                 if(e.type == SDL_QUIT)
                     quit = true;
                 
-                handleKeyEvent(&e, &playerSnake);
                 buttonEvent = handleButtonEvents(&e);
 
             }
@@ -43,13 +40,7 @@ int main(int argc, char *argv[])
             SDL_SetRenderDrawColor(gRenderer, 0x0, 0x0, 0x0, 0x0);
             SDL_RenderClear(gRenderer);
 
-            // mainMenuScene(buttonEvent);
-            if(!isGameOver(playerSnake))
-            {
-                gameScene();
-            }
-            else
-                gameOverScene(buttonEvent);
+            gameScene();
 
             /*Update Screen*/
             SDL_RenderPresent(gRenderer);

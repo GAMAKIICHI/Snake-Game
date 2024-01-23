@@ -10,23 +10,13 @@ static Button exitBtn = {"EXIT", 175, 64, 0, 280, 32, false, {0x1C, 0xFC, 0x3, 0
 
 void gameScene()
 {
-    /*update the pos of the snake*/
-    move(&playerSnake);
-    renderSnakeHead(playerSnake.body);
-    renderBody(playerSnake.body);
 
-    /*Check whether the snake head has collided with food*/
-    if(checkCollision(snakeRect, foodRect))
-    {
-        /*Add new body node*/
-        insertNodeAtEnd(playerSnake.body);
-        placeFood(&food);
-        playerSnake.score++;
-    }
-
-    // printlist(playerSnake.body);
     renderGrid();
-    renderFood(&food);
+
+    renderSnakeHead();
+
+    placeFood();
+    renderFood();
 }
 
 int mainMenuScene(SDL_Keycode btn)
@@ -55,7 +45,7 @@ int gameOverScene(SDL_Keycode btn)
     char score[10];
 
     /*Convert score from int to char*/
-    sprintf(score, "SCORE: %d", playerSnake.score);
+    sprintf(score, "SCORE: %d", getScore());
 
     renderText("GAME OVER", defaultFont.fontPath, defaultFont.fontSize, defaultFont.color, 0,20);
 
@@ -80,23 +70,6 @@ SDL_Keycode handleButtonEvents(SDL_Event *e)
 {
     if(e->type == SDL_KEYDOWN)
     {
-        switch(e->key.keysym.sym)
-        {
-            case SDLK_UP:
-                return SDLK_UP;
-                break;
-            case SDLK_DOWN:
-                return SDLK_DOWN;
-                break;
-            case SDLK_RIGHT:
-                return SDLK_RIGHT;
-                break;
-            case SDLK_LEFT:
-                return SDLK_LEFT;
-                break;
-            default:
-                return (SDL_KeyCode) NULL;
-                break;
-        }
+        return e->key.keysym.sym;
     }
 }

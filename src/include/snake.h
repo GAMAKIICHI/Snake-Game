@@ -31,7 +31,7 @@ typedef struct {
 
 typedef struct Node
 {
-    Position value;
+    Position pos;
     struct Node *next;
 }node_t;
 
@@ -41,34 +41,42 @@ typedef struct
     Position sVel;
     unsigned int score;
     enum Difficulty difficulty;
+    int size;
+    SDL_Color color;
 } Snake;
 
 typedef struct
 {
     Position pos;
+    int size;
 } Food;
 
+typedef struct
+{
+    int size;
+    SDL_Color color;
+    enum Difficulty difficulty;
+}settings;
+
 extern unsigned int lastMoved;
-extern Snake playerSnake;
-extern Food food;
 
-void handleKeyEvent(SDL_Event *, Snake *);
-void move(Snake *);
-void renderSnakeHead(node_t *);
-void renderBody(node_t *);
+/*Food Functions*/
+void initFood();
+void placeFood();
+void renderFood();
 
-bool checkCollision(SDL_Rect, SDL_Rect);
-bool isInNewGrid(Position , Position);
+/*Snake Functions*/
+void initSnake();
 
-void placeFood(Food *);
-void renderFood(Food *);
+Position handleKeyEvent(SDL_Event *);
+void move();
+void renderSnakeHead();
 
-bool isGameOver(Snake);
+int getScore();
 
-node_t *create_new_node(Position);
-void insertNodeAtEnd(node_t *);
-void shift(node_t *);
-void freeSnake(node_t *);
+/*Linked List Functions*/
+node_t *create_new_body_node(Position);
+void insertBodyNode(node_t *);
 
 void printlist(node_t *);
 void testBody();

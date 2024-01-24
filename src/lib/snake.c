@@ -53,8 +53,6 @@ void initSnake()
 
     node_t *newHead = create_new_body_node((Position){((WIDTH/defaultSettings.size)/2) * defaultSettings.size, ((HEIGHT/defaultSettings.size)/2) * defaultSettings.size});
 
-    printf("%d %d\n", newHead->pos.x, newHead->pos.y);
-
     snake->body = newHead;
     snake->sVel = (Position){0,0};
     snake->score = 0;
@@ -70,13 +68,17 @@ Position handleKeyEvent(SDL_Event *e)
         switch(e->key.keysym.sym)
         {
             case SDLK_UP:
-                return (Position){0, -16};
+                snake->sVel = (Position){0, -16};
+                break;
             case SDLK_DOWN:
-                return (Position){0, 16};
+                snake->sVel = (Position){0, 16};
+                break;
             case SDLK_RIGHT:
-                return (Position){16, 0};
+                snake->sVel = (Position){16, 0};
+                break;
             case SDLK_LEFT:
-                return (Position){16, 0};
+                snake->sVel = (Position){-16, 0};
+                break;
         }
     }
     
@@ -111,6 +113,23 @@ void renderSnakeHead()
 
     SDL_SetRenderDrawColor(gRenderer, snake->color.r, snake->color.g, snake->color.b, snake->color.a);
     SDL_RenderFillRect(gRenderer, &snakeRect);
+}
+
+void checkBoundaries()
+{
+    switch(snake->difficulty)
+    {
+        case EASY:
+            if(snake->body->pos.x < 0)
+                snake->body->pos.x = WIDTH;
+            else if(snake->body->pos.x > WIDTH)
+                snake->body->pos.x = 0;
+            else if(snake->body->pos.y < GRIDOFFSET)
+                snake->body->pos.y = HEIGHT;
+            else if(snake->body->pos.y > HEIGHT)
+                snake->body->pos.y = GRIDOFFSET;
+            break;
+    }
 }
 
 int getScore()

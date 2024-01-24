@@ -4,7 +4,7 @@ SDL_Rect gridRect = {(int)NULL,(int)NULL,16,16};
 
 void renderGrid()
 {
-    for(int row = 0; row <= HEIGHT; row+=16)
+    for(int row = GRIDOFFSET; row <= HEIGHT; row+=16)
     {
         for(int col = 0; col <= WIDTH; col+=16)
         {

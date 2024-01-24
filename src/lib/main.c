@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
                 if(e.type == SDL_QUIT)
                     quit = true;
                 
+                handleKeyEvent(&e);
                 buttonEvent = handleButtonEvents(&e);
 
             }

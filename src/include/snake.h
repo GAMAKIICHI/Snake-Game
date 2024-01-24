@@ -7,6 +7,7 @@
 #include "SDL2/SDL_events.h"
 #include "SDL2/SDL_timer.h"
 #include "graphics.h"
+#include "grid.h"
 
 enum KeyPress
 {
@@ -71,6 +72,8 @@ void initSnake();
 Position handleKeyEvent(SDL_Event *);
 void move();
 void renderSnakeHead();
+
+void checkBoundaries();
 
 int getScore();
 

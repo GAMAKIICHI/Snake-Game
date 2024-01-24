@@ -11,12 +11,21 @@ static Button exitBtn = {"EXIT", 175, 64, 0, 280, 32, false, {0x1C, 0xFC, 0x3, 0
 void gameScene()
 {
 
+    char score[10];
+
+    /*Convert score from int to char*/
+    sprintf(score, "SCORE: %d", getScore());
+
+    renderText(score, defaultFont.fontPath, 32, defaultFont.color, -184, 2);
+
     renderGrid();
 
+    move();
+    checkBoundaries();
     renderSnakeHead();
 
-    placeFood();
-    renderFood();
+
+    // renderFood();
 }
 
 int mainMenuScene(SDL_Keycode btn)
@@ -42,10 +51,11 @@ int mainMenuScene(SDL_Keycode btn)
 
 int gameOverScene(SDL_Keycode btn)
 {
+
     char score[10];
 
     /*Convert score from int to char*/
-    sprintf(score, "SCORE: %d", getScore());
+    return sprintf(score, "SCORE: %d", getScore());
 
     renderText("GAME OVER", defaultFont.fontPath, defaultFont.fontSize, defaultFont.color, 0,20);
 

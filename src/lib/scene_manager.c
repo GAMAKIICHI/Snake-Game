@@ -24,8 +24,8 @@ void gameScene()
     checkBoundaries();
     renderSnakeHead();
 
-
-    // renderFood();
+    placeFood();
+    renderFood();
 }
 
 int mainMenuScene(SDL_Keycode btn)

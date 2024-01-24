@@ -18,7 +18,8 @@ void initFood()
         return;
     }
 
-    food->pos = (Position){0,0};
+    /*init food position to the center of the grid*/
+    food->pos = (Position){((WIDTH/defaultSettings.size)/2) * defaultSettings.size, ((HEIGHT/defaultSettings.size)/2) * defaultSettings.size};
     food->size = defaultSettings.size;
 }
 
@@ -27,8 +28,14 @@ void placeFood()
     /*initialize rand*/
     srand(SDL_GetTicks());
 
-    food->pos.x = (rand() % WIDTH / food->size) * food->size;
-    food->pos.y = (rand() % HEIGHT / food->size) * food->size;
+    /*Checks if the snake rect and the food rect have collided*/
+    if(SDL_HasIntersection(&snakeRect, &foodRect))
+    {
+        food->pos.x = (rand() % WIDTH) / food->size * food->size;
+        food->pos.y = (rand() % (HEIGHT - GRIDOFFSET  + 1) + GRIDOFFSET) / food->size * food->size;
+
+        snake->score++;
+    }
 }
 
 void renderFood()
@@ -51,11 +58,12 @@ void initSnake()
         return;
     }
 
+    /*init snake position to the center of the grid*/
     node_t *newHead = create_new_body_node((Position){((WIDTH/defaultSettings.size)/2) * defaultSettings.size, ((HEIGHT/defaultSettings.size)/2) * defaultSettings.size});
 
     snake->body = newHead;
     snake->sVel = (Position){0,0};
-    snake->score = 0;
+    snake->score = -1; /*this is set to -1 because at the start of the game the snake rect and food rect collide to generate food pos*/
     snake->difficulty = defaultSettings.difficulty;
     snake->size = defaultSettings.size;
     snake->color = defaultSettings.color;
@@ -88,7 +96,7 @@ void move()
 {
     unsigned int currentTime = SDL_GetTicks();
 
-    if(currentTime - lastMoved >= snake->difficulty)
+    if(currentTime - lastMoved >= snake->difficulty && snake->body != NULL)
     {
         /*updates head of linked list that stores pos of head of snake*/
         snake->body->pos.x += snake->sVel.x;
@@ -129,7 +137,31 @@ void checkBoundaries()
             else if(snake->body->pos.y > HEIGHT)
                 snake->body->pos.y = GRIDOFFSET;
             break;
+        case MEDIUM:
+        case HARD:
+            if(snake->body->pos.x < 0 || snake->body->pos.x > WIDTH || snake->body->pos.y < GRIDOFFSET || snake->body->pos.y > HEIGHT) 
+            {
+                freeSnake();
+                freeFood();
+            }
+            break;
     }
+}
+
+void freeSnake()
+{
+
+    /*deallocate memory for snake body*/
+    free(snake->body);
+
+    /*deallocate memory made for snake struct*/
+    free(snake);
+}
+
+void freeFood()
+{
+    /*deallocate memory made for food struct*/
+    free(food);
 }
 
 int getScore()

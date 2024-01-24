@@ -75,6 +75,9 @@ void renderSnakeHead();
 
 void checkBoundaries();
 
+void freeSnake();
+void freeFood();
+
 int getScore();
 
 /*Linked List Functions*/

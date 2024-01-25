@@ -8,6 +8,8 @@
 #include "SDL2/SDL_timer.h"
 #include "graphics.h"
 #include "grid.h"
+#include <time.h>
+#include <math.h>
 
 enum KeyPress
 {
@@ -69,22 +71,26 @@ void renderFood();
 /*Snake Functions*/
 void initSnake();
 
-Position handleKeyEvent(SDL_Event *);
+Position handleKeyEvent(SDL_Event *e);
+static Position generateRandomPos(int seed);
+
 void move();
 void renderSnakeHead();
 
+static void moveBody();
+void renderSnakeBody();
+
 void checkBoundaries();
 
-void freeSnake();
-void freeFood();
+static void freeSnake();
+static void freeFood();
 
 int getScore();
 
 /*Linked List Functions*/
-node_t *create_new_body_node(Position);
-void insertBodyNode(node_t *);
+static node_t *create_new_body_node(Position);
+static void insertBodyNode(Position newPos);
 
-void printlist(node_t *);
-void testBody();
+void printBody();
 
 #endif

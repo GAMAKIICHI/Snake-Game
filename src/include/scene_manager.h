@@ -2,8 +2,8 @@
 #define SCENE_MANAGER_H
 
 #include <SDL2/SDL_ttf.h>
-#include "snake.h"
 #include "grid.h"
+#include "snake.h"
 
 typedef struct 
 {

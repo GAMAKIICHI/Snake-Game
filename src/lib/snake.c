@@ -18,33 +18,8 @@ void initFood()
         return;
     }
 
-    /*init food position to the center of the grid*/
-    food->pos = (Position){((WIDTH/defaultSettings.size)/2) * defaultSettings.size, ((HEIGHT/defaultSettings.size)/2) * defaultSettings.size};
     food->size = defaultSettings.size;
-}
-
-void placeFood()
-{
-    /*initialize rand*/
-    srand(SDL_GetTicks());
-
-    /*Checks if the snake rect and the food rect have collided*/
-    if(SDL_HasIntersection(&snakeRect, &foodRect))
-    {
-        food->pos.x = (rand() % WIDTH) / food->size * food->size;
-        food->pos.y = (rand() % (HEIGHT - GRIDOFFSET  + 1) + GRIDOFFSET) / food->size * food->size;
-
-        snake->score++;
-    }
-}
-
-void renderFood()
-{
-    foodRect.x = food->pos.x;
-    foodRect.y = food->pos.y;
-
-    SDL_SetRenderDrawColor(gRenderer, 0x1C, 0xFC, 0x3, 0xFF);
-    SDL_RenderFillRect(gRenderer, &foodRect);
+    food->pos = generateRandomPos(time(NULL));
 }
 
 void initSnake()
@@ -63,10 +38,30 @@ void initSnake()
 
     snake->body = newHead;
     snake->sVel = (Position){0,0};
-    snake->score = -1; /*this is set to -1 because at the start of the game the snake rect and food rect collide to generate food pos*/
+    snake->score = 0;
     snake->difficulty = defaultSettings.difficulty;
     snake->size = defaultSettings.size;
     snake->color = defaultSettings.color;
+}
+
+void placeFood()
+{
+    /*Checks if the snake rect and the food rect have collided*/
+    if(SDL_HasIntersection(&snakeRect, &foodRect))
+    {
+        insertBodyNode(food->pos);
+        food->pos = generateRandomPos(SDL_GetTicks());
+        snake->score++;
+    }
+}
+
+void renderFood()
+{
+    foodRect.x = food->pos.x;
+    foodRect.y = food->pos.y;
+
+    SDL_SetRenderDrawColor(gRenderer, 0x1C, 0xFC, 0x3, 0xFF);
+    SDL_RenderFillRect(gRenderer, &foodRect);
 }
 
 Position handleKeyEvent(SDL_Event *e)
@@ -92,19 +87,62 @@ Position handleKeyEvent(SDL_Event *e)
     
 }
 
+static Position generateRandomPos(int seed)
+{
+
+    /*initialize rand*/
+    srand(seed);
+
+    Position newPos = {(rand() % WIDTH) / food->size * food->size, (rand() % (HEIGHT - GRIDOFFSET  + 1) + GRIDOFFSET) / food->size * food->size};
+    return newPos;
+
+}
+
 void move()
 {
+    if(snake->body == NULL)
+    {
+        printf("There is no snake body!\n");
+        return;
+    }
+
     unsigned int currentTime = SDL_GetTicks();
 
-    if(currentTime - lastMoved >= snake->difficulty && snake->body != NULL)
-    {
+    /*Updates the position of the snake after a certain time in ms. See difficulty for ms*/
+    if(currentTime - lastMoved >= snake->difficulty)
+    {   
+        moveBody();
+
         /*updates head of linked list that stores pos of head of snake*/
         snake->body->pos.x += snake->sVel.x;
         snake->body->pos.y += snake->sVel.y;
 
         lastMoved = currentTime;
     }
+}
 
+static void moveBody()
+{
+     if(snake->body == NULL || snake->body->next == NULL)
+    {
+        printf("There is no snake body to move!\n");
+        return;
+    }
+
+    if(snake->body->pos.x != snake->body->next->pos.x|| snake->body->pos.y != snake->body->next->pos.y)
+    {
+        node_t *temp = snake->body->next;
+        Position prev = snake->body->pos;
+        Position next = temp->pos;
+
+        while(temp != NULL)
+        {
+            temp->pos = prev;
+            temp = temp->next;
+            prev = next;
+            next = (temp != NULL) ? temp->pos : prev;
+        }
+    }
 }
 
 /*
@@ -116,6 +154,12 @@ param: body, ptr to body of snake
 
 void renderSnakeHead()
 {
+    if(snake->body == NULL)
+    {
+        printf("There is no snake body!\n");
+        return;
+    }
+
     snakeRect.x = snake->body->pos.x;
     snakeRect.y = snake->body->pos.y;
 
@@ -123,8 +167,34 @@ void renderSnakeHead()
     SDL_RenderFillRect(gRenderer, &snakeRect);
 }
 
+void renderSnakeBody()
+{
+    if(snake->body->next == NULL)
+        return;
+
+    node_t *temp = snake->body->next;
+
+    while(temp != NULL)
+    {
+        bodyRect.x = temp->pos.x;
+        bodyRect.y = temp->pos.y;
+
+        SDL_SetRenderDrawColor(gRenderer, snake->color.r, snake->color.g, snake->color.b, snake->color.a);
+        SDL_RenderFillRect(gRenderer, &bodyRect);
+
+        temp = temp->next;
+    }
+}
+
 void checkBoundaries()
 {
+
+    if(snake->body == NULL)
+    {
+        printf("There is no snake body!\n");
+        return;
+    }
+
     switch(snake->difficulty)
     {
         case EASY:
@@ -148,7 +218,7 @@ void checkBoundaries()
     }
 }
 
-void freeSnake()
+static void freeSnake()
 {
 
     /*deallocate memory for snake body*/
@@ -158,7 +228,7 @@ void freeSnake()
     free(snake);
 }
 
-void freeFood()
+static void freeFood()
 {
     /*deallocate memory made for food struct*/
     free(food);
@@ -178,7 +248,7 @@ param: pos, current pos when added to body
 returns: node_t
 */
 
-node_t *create_new_body_node(Position pos)
+static node_t *create_new_body_node(Position pos)
 {
     /*allocate memory for new node*/
     node_t *result = malloc(sizeof(node_t));
@@ -197,15 +267,14 @@ param: head, ptr to body of snake
        pos, current pos when added to body
 */
 
-void insertBodyNode(node_t *head)
+static void insertBodyNode(Position newPos)
 {
     node_t *temp;
-    Position newPos;
 
-    if(head == NULL)
+    if(snake->body == NULL)
         return;
 
-    temp = head;
+    temp = snake->body;
 
     /*this goes through the linked list till it reaches the last element*/
     while(temp->next != NULL)
@@ -216,9 +285,9 @@ void insertBodyNode(node_t *head)
     temp->next = create_new_body_node(newPos);
 }
 
-void printlist(node_t *head)
+void printBody()
 {
-    node_t *temp = head;
+    node_t *temp = snake->body;
     while(temp != NULL)
     {
         printf("[%d, %d]->", temp->pos.x, temp->pos.y);
@@ -226,10 +295,4 @@ void printlist(node_t *head)
     }
 
     printf("NULL\n");
-}
-
-void testBody()
-{
-    node_t *head = NULL;
-    node_t *temp;
 }

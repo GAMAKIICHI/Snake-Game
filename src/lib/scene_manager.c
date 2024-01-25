@@ -22,7 +22,9 @@ void gameScene()
 
     move();
     checkBoundaries();
+
     renderSnakeHead();
+    renderSnakeBody();
 
     placeFood();
     renderFood();

@@ -12,7 +12,7 @@ void initFood()
     /*Allocating memory for snake*/
     food = malloc(sizeof(Food));
 
-    if(snake == NULL)
+    if(food == NULL)
     {
         printf("Unable to init Food!\n");
         return;
@@ -102,7 +102,7 @@ void move()
 {
     if(snake->body == NULL)
     {
-        printf("There is no snake body!\n");
+        printf("There is no snake head to move!\n");
         return;
     }
 
@@ -156,7 +156,7 @@ void renderSnakeHead()
 {
     if(snake->body == NULL)
     {
-        printf("There is no snake body!\n");
+        printf("There is no snake head to render!\n");
         return;
     }
 
@@ -170,7 +170,10 @@ void renderSnakeHead()
 void renderSnakeBody()
 {
     if(snake->body->next == NULL)
+    {
+        printf("There is no snake body to render!\n");
         return;
+    }
 
     node_t *temp = snake->body->next;
 
@@ -178,6 +181,12 @@ void renderSnakeBody()
     {
         bodyRect.x = temp->pos.x;
         bodyRect.y = temp->pos.y;
+
+        /*This checks whether the snake head has collided with snake body*/
+        if(SDL_HasIntersection(&snakeRect, &bodyRect))
+        {
+            printf("Collision\n");
+        }
 
         SDL_SetRenderDrawColor(gRenderer, snake->color.r, snake->color.g, snake->color.b, snake->color.a);
         SDL_RenderFillRect(gRenderer, &bodyRect);
@@ -191,7 +200,7 @@ void checkBoundaries()
 
     if(snake->body == NULL)
     {
-        printf("There is no snake body!\n");
+        printf("There is no snake body to check boundaries!\n");
         return;
     }
 
@@ -199,11 +208,11 @@ void checkBoundaries()
     {
         case EASY:
             if(snake->body->pos.x < 0)
-                snake->body->pos.x = WIDTH;
+                snake->body->pos.x = WIDTH - snake->size;
             else if(snake->body->pos.x > WIDTH)
                 snake->body->pos.x = 0;
             else if(snake->body->pos.y < GRIDOFFSET)
-                snake->body->pos.y = HEIGHT;
+                snake->body->pos.y = HEIGHT - snake->size;
             else if(snake->body->pos.y > HEIGHT)
                 snake->body->pos.y = GRIDOFFSET;
             break;

@@ -2,6 +2,7 @@
 #include "setup.h"
 #include "scene_manager.h"
 #include "snake.h"
+#include "gamestate.h"
 
 int main(int argc, char *argv[])
 {
@@ -20,7 +21,6 @@ int main(int argc, char *argv[])
         SDL_UpdateWindowSurface(gWindow);
 
         SDL_Event e;
-        bool quit = false;
         SDL_Keycode buttonEvent;
 
         /*Event handling*/
@@ -41,7 +41,20 @@ int main(int argc, char *argv[])
             SDL_SetRenderDrawColor(gRenderer, 0x0, 0x0, 0x0, 0x0);
             SDL_RenderClear(gRenderer);
 
-            gameScene();
+            switch(getGameState())
+            {
+                case MAINMENU:
+                    mainMenuScene(buttonEvent);
+                    break;
+                case GAME:
+                    gameScene();
+                    break;
+                case GAMEOVER:
+                    gameOverScene(buttonEvent);
+                    break;
+                case SETTINGS:
+                    break;
+            }
 
             /*Update Screen*/
             SDL_RenderPresent(gRenderer);

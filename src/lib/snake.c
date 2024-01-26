@@ -1,8 +1,8 @@
 #include "snake.h"
 
-unsigned int lastMoved = 0;
+static unsigned int lastMoved = 0;
 
-static settings defaultSettings = {16, {0x1C, 0xFC, 0x3, 0xFF}, EASY};
+static settings defaultSettings = {16, {0x1C, 0xFC, 0x3, 0xFF}, MEDIUM};
 
 static Snake *snake;
 static Food *food;
@@ -228,6 +228,7 @@ void renderSnakeBody()
         {  
             freeSnakeBody();
             freeFood();
+            setGameState(GAMEOVER);
             return;
         }
         else
@@ -267,6 +268,7 @@ void checkBoundaries()
             {
                 freeSnakeBody();
                 freeFood();
+                setGameState(GAMEOVER);
             }
             break;
     }

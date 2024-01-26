@@ -108,7 +108,7 @@ Position handleKeyEvent(SDL_Event *e)
 
 static Position generateRandomPos(int seed)
 {
-    if(food == NULL)
+    if(food == NULL || snake->body == NULL)
     {
         return (Position){0,0};
     }
@@ -117,6 +117,23 @@ static Position generateRandomPos(int seed)
     srand(seed);
 
     Position newPos = {(rand() % WIDTH) / food->size * food->size, (rand() % (HEIGHT - GRIDOFFSET  + 1) + GRIDOFFSET) / food->size * food->size};
+
+    node_t *temp = snake->body;
+
+    while(temp != NULL)
+    {   
+        /*This is needed so when a new food is created it cannont be placed in pos as snake*/
+        if(temp->pos.x == newPos.x || temp->pos.y == newPos.y)
+        {
+            newPos.x = (rand() % WIDTH) / food->size * food->size;
+            newPos.y = (rand() % (HEIGHT - GRIDOFFSET  + 1) + GRIDOFFSET) / food->size * food->size;
+
+            return newPos;
+        }
+        temp = temp->next;
+    }
+
+    printf("Randomly Generated Pos: (%d,%d)\n", newPos.x, newPos.y);
     return newPos;
 
 }

@@ -49,7 +49,8 @@ void placeFood()
     /*Checks if the snake rect and the food rect have collided*/
     if(SDL_HasIntersection(&snakeRect, &foodRect))
     {
-        insertBodyNode(food->pos);
+        /*position is off screen so head does not collide immedialty when inserted*/
+        insertBodyNode((Position){-16,-16});
         food->pos = generateRandomPos(SDL_GetTicks());
         snake->score++;
     }
@@ -66,6 +67,11 @@ void renderFood()
 
 Position handleKeyEvent(SDL_Event *e)
 {  
+    if(snake == NULL || snake->body == NULL)
+    {
+        return (Position){0,0};
+    }
+
     if(e->type == SDL_KEYDOWN)
     {
         switch(e->key.keysym.sym)
@@ -89,6 +95,10 @@ Position handleKeyEvent(SDL_Event *e)
 
 static Position generateRandomPos(int seed)
 {
+    if(food == NULL)
+    {
+        return (Position){0,0};
+    }
 
     /*initialize rand*/
     srand(seed);
@@ -100,7 +110,7 @@ static Position generateRandomPos(int seed)
 
 void move()
 {
-    if(snake->body == NULL)
+    if(snake == NULL || snake->body == NULL)
     {
         printf("There is no snake head to move!\n");
         return;
@@ -123,7 +133,7 @@ void move()
 
 static void moveBody()
 {
-     if(snake->body == NULL || snake->body->next == NULL)
+    if(snake == NULL || snake->body == NULL || snake->body->next == NULL)
     {
         printf("There is no snake body to move!\n");
         return;
@@ -154,7 +164,7 @@ param: body, ptr to body of snake
 
 void renderSnakeHead()
 {
-    if(snake->body == NULL)
+    if(snake == NULL || snake->body == NULL)
     {
         printf("There is no snake head to render!\n");
         return;
@@ -169,7 +179,7 @@ void renderSnakeHead()
 
 void renderSnakeBody()
 {
-    if(snake->body->next == NULL)
+    if(snake == NULL || snake->body == NULL || snake->body->next == NULL)
     {
         printf("There is no snake body to render!\n");
         return;
@@ -179,26 +189,31 @@ void renderSnakeBody()
 
     while(temp != NULL)
     {
+
         bodyRect.x = temp->pos.x;
         bodyRect.y = temp->pos.y;
 
         /*This checks whether the snake head has collided with snake body*/
         if(SDL_HasIntersection(&snakeRect, &bodyRect))
-        {
-            printf("Collision\n");
+        {  
+            freeSnakeBody();
+            freeFood();
+            return;
         }
+        else
+        {
+            SDL_SetRenderDrawColor(gRenderer, snake->color.r, snake->color.g, snake->color.b, snake->color.a);
+            SDL_RenderFillRect(gRenderer, &bodyRect);
 
-        SDL_SetRenderDrawColor(gRenderer, snake->color.r, snake->color.g, snake->color.b, snake->color.a);
-        SDL_RenderFillRect(gRenderer, &bodyRect);
-
-        temp = temp->next;
+            temp = temp->next;
+        }
     }
 }
 
 void checkBoundaries()
 {
 
-    if(snake->body == NULL)
+    if(snake == NULL || snake->body == NULL)
     {
         printf("There is no snake body to check boundaries!\n");
         return;
@@ -220,21 +235,34 @@ void checkBoundaries()
         case HARD:
             if(snake->body->pos.x < 0 || snake->body->pos.x > WIDTH || snake->body->pos.y < GRIDOFFSET || snake->body->pos.y > HEIGHT) 
             {
-                freeSnake();
+                freeSnakeBody();
                 freeFood();
             }
             break;
     }
 }
 
-static void freeSnake()
+void freeSnake()
 {
-
-    /*deallocate memory for snake body*/
-    free(snake->body);
-
     /*deallocate memory made for snake struct*/
     free(snake);
+}
+
+static void freeSnakeBody()
+{
+    if(snake == NULL || snake->body == NULL)
+        return;
+
+    node_t *temp = snake->body;
+
+    /*deallocate memory for snake body*/
+    while(temp != NULL)
+    {
+        free(temp);
+        temp = temp->next;
+    }   
+
+    snake->body = NULL;
 }
 
 static void freeFood()

@@ -82,7 +82,8 @@ void renderSnakeBody();
 
 void checkBoundaries();
 
-static void freeSnake();
+void freeSnake();
+static void freeSnakeBody();
 static void freeFood();
 
 int getScore();

@@ -57,7 +57,10 @@ int gameOverScene(SDL_Keycode btn)
     char score[10];
 
     /*Convert score from int to char*/
-    return sprintf(score, "SCORE: %d", getScore());
+    sprintf(score, "SCORE: %d", getScore());
+
+    /*Deallocates memory for snake after score variable is used*/
+    freeSnake();
 
     renderText("GAME OVER", defaultFont.fontPath, defaultFont.fontSize, defaultFont.color, 0,20);
 

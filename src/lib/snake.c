@@ -74,6 +74,19 @@ Position handleKeyEvent(SDL_Event *e)
 
     if(e->type == SDL_KEYDOWN)
     {
+
+        /*These if statements make sure the head of the snake cant go backwards directly in the body*/
+        if(e->key.keysym.sym == SDLK_UP || e->key.keysym.sym == SDLK_DOWN)
+        {
+            if(snake->body->next != NULL && snake->sVel.y != 0)
+                return snake->sVel;
+        }
+        else if(e->key.keysym.sym == SDLK_RIGHT || e->key.keysym.sym == SDLK_LEFT)
+        {
+            if(snake->body->next != NULL && snake->sVel.x != 0)
+                return snake->sVel;
+        }
+
         switch(e->key.keysym.sym)
         {
             case SDLK_UP:

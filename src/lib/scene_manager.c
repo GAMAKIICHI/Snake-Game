@@ -2,10 +2,10 @@
 
 static FontSetting defaultFont = {"fonts/munro.ttf", 64, {0x1C, 0xFC, 0x3, 0xFF}};
 
-static Button startBtn = {"START", 175, 64, 0, 200, 32, false, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
+static Button startBtn = {"START", 175, 64, 0, 200, 32, true, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
 static Button settingsBtn = {"SETTINGS", 175, 64, 0, 280, 32, false, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
 
-static Button playAgainBtn = {"PLAY AGAIN?", 175, 64, 0, 200, 32, false, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
+static Button playAgainBtn = {"PLAY AGAIN?", 175, 64, 0, 200, 32, true, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
 static Button exitBtn = {"EXIT", 175, 64, 0, 280, 32, false, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
 
 void gameScene()
@@ -45,8 +45,16 @@ int mainMenuScene(SDL_Keycode btn)
     {
         settingsBtn.isFocus = true;
         startBtn.isFocus = false;
-    } 
-        
+    }
+    else if(btn == SDLK_RETURN && startBtn.isFocus)
+    {
+        setGameState(GAME);
+    }
+    else if(btn == SDLK_RETURN && settingsBtn.isFocus)
+    {
+        setGameState(SETTINGS);
+    }
+
     renderButton(startBtn);
     renderButton(settingsBtn);
 }
@@ -76,6 +84,16 @@ int gameOverScene(SDL_Keycode btn)
         exitBtn.isFocus = true;
         playAgainBtn.isFocus = false;
     } 
+    else if(btn == SDLK_RETURN && playAgainBtn.isFocus)
+    {
+        initSnake();
+        initFood();
+        setGameState(GAME);
+    }
+    else if(btn == SDLK_RETURN && exitBtn.isFocus)
+    {
+        quit = true;
+    }
 
     renderButton(playAgainBtn);
     renderButton(exitBtn);

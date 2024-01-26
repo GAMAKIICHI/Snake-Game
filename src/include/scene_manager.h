@@ -4,13 +4,7 @@
 #include <SDL2/SDL_ttf.h>
 #include "grid.h"
 #include "snake.h"
-
-typedef struct 
-{
-    void *scene;
-    struct Scenes *prev, *next;
-
-}Scenes;
+#include "gamestate.h"
 
 typedef struct
 {
@@ -18,17 +12,6 @@ typedef struct
     int fontSize;
     SDL_Color color;
 }FontSetting;
-
-typedef struct 
-{
-    int width;
-    int height;
-    int fontSize;
-    SDL_Color color;
-    SDL_Color focus;
-    
-}ButtonSettings;
-
 
 int mainMenuScene(SDL_Keycode btn);
 

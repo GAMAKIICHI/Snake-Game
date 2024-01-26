@@ -10,6 +10,7 @@
 #include "grid.h"
 #include <time.h>
 #include <math.h>
+#include "gamestate.h"
 
 enum KeyPress
 {
@@ -60,8 +61,6 @@ typedef struct
     SDL_Color color;
     enum Difficulty difficulty;
 }settings;
-
-extern unsigned int lastMoved;
 
 /*Food Functions*/
 void initFood();

@@ -3,6 +3,8 @@
         "sdl_render.h": "c",
         "linkedlist.h": "c",
         "snake.h": "c",
-        "sdl_ttf.h": "c"
+        "sdl_ttf.h": "c",
+        "gamestate.h": "c",
+        "scene_manager.h": "c"
     }
 }

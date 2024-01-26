@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
             /*Update Screen*/
             SDL_RenderPresent(gRenderer);
 
-            system("cls"); /*clear console*/
+            // system("cls"); /*clear console*/
         }
     }
     

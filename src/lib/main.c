@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
         SDL_UpdateWindowSurface(gWindow);
 
         SDL_Event e;
-        SDL_Keycode buttonEvent;
+        SDL_Keycode sceneKeyEvents;
 
         /*Event handling*/
         while(!quit)
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
                     quit = true;
                 
                 handleKeyEvent(&e);
-                buttonEvent = handleButtonEvents(&e);
+                sceneKeyEvents = handleButtonEvents(&e);
 
             }
 
@@ -44,15 +44,16 @@ int main(int argc, char *argv[])
             switch(getGameState())
             {
                 case MAINMENU:
-                    mainMenuScene(buttonEvent);
+                    mainMenuScene(sceneKeyEvents);
                     break;
                 case GAME:
                     gameScene();
                     break;
                 case GAMEOVER:
-                    gameOverScene(buttonEvent);
+                    gameOverScene(sceneKeyEvents);
                     break;
                 case SETTINGS:
+                    settingsScene(sceneKeyEvents);
                     break;
             }
 

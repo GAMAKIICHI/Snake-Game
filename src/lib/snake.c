@@ -2,7 +2,7 @@
 
 static unsigned int lastMoved = 0;
 
-static settings defaultSettings = {16, {0x1C, 0xFC, 0x3, 0xFF}, MEDIUM};
+static settings defaultSettings = {16, {0x1C, 0xFC, 0x3, 0xFF}, EASY};
 
 static Snake *snake;
 static Food *food;
@@ -46,6 +46,13 @@ void initSnake()
 
 void placeFood()
 {
+
+    if(food == NULL || snake == NULL)
+    {
+        printf("Unable to place food!\n");
+        return; 
+    }
+
     /*Checks if the snake rect and the food rect have collided*/
     if(SDL_HasIntersection(&snakeRect, &foodRect))
     {
@@ -58,6 +65,12 @@ void placeFood()
 
 void renderFood()
 {
+    if(food == NULL)
+    {
+        printf("Unable to render food!\n");
+        return;
+    }
+
     foodRect.x = food->pos.x;
     foodRect.y = food->pos.y;
 
@@ -69,6 +82,7 @@ Position handleKeyEvent(SDL_Event *e)
 {  
     if(snake == NULL || snake->body == NULL)
     {
+        printf("No body to handle key events\n");
         return (Position){0,0};
     }
 
@@ -108,8 +122,9 @@ Position handleKeyEvent(SDL_Event *e)
 
 static Position generateRandomPos(int seed)
 {
-    if(food == NULL || snake->body == NULL)
+    if(food == NULL || snake == NULL || snake->body == NULL)
     {
+        printf("Unable to generate random pos\n");
         return (Position){0,0};
     }
 
@@ -133,7 +148,6 @@ static Position generateRandomPos(int seed)
         temp = temp->next;
     }
 
-    printf("Randomly Generated Pos: (%d,%d)\n", newPos.x, newPos.y);
     return newPos;
 
 }
@@ -226,7 +240,7 @@ void renderSnakeBody()
         /*This checks whether the snake head has collided with snake body*/
         if(SDL_HasIntersection(&snakeRect, &bodyRect))
         {  
-            freeSnakeBody();
+            freeSnake();
             freeFood();
             setGameState(GAMEOVER);
             return;
@@ -266,7 +280,7 @@ void checkBoundaries()
         case HARD:
             if(snake->body->pos.x < 0 || snake->body->pos.x > WIDTH || snake->body->pos.y < GRIDOFFSET || snake->body->pos.y > HEIGHT) 
             {
-                freeSnakeBody();
+                freeSnake();
                 freeFood();
                 setGameState(GAMEOVER);
             }
@@ -275,12 +289,6 @@ void checkBoundaries()
 }
 
 void freeSnake()
-{
-    /*deallocate memory made for snake struct*/
-    free(snake);
-}
-
-static void freeSnakeBody()
 {
     if(snake == NULL || snake->body == NULL)
         return;
@@ -295,17 +303,30 @@ static void freeSnakeBody()
     }   
 
     snake->body = NULL;
+
+    /*deallocate memory made for snake struct*/
+    free(snake);
+    printf("Snake freed\n");
 }
 
 static void freeFood()
 {
     /*deallocate memory made for food struct*/
     free(food);
+    printf("Food freed\n");
 }
 
 int getScore()
 {
-    return snake->score;
+    if(snake == NULL)
+        return 0;
+    else
+        return snake->score;
+}
+
+void setColor(SDL_Color selectedColor)
+{
+    snake->color = selectedColor;
 }
 
 /*

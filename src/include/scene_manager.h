@@ -5,6 +5,7 @@
 #include "grid.h"
 #include "snake.h"
 #include "gamestate.h"
+#include <stdbool.h>
 
 typedef struct
 {
@@ -13,11 +14,27 @@ typedef struct
     SDL_Color color;
 }FontSetting;
 
-int mainMenuScene(SDL_Keycode btn);
+typedef struct
+{
+    char fontPath[1000];
+    int numSound;
+    int xOffset;
+    int posY;
+    SDL_Color color;
+    SDL_Color focus;
+    bool isFocus;
+
+}barSettings;
+
+void mainMenuScene(SDL_Keycode btn);
 
 void gameScene();
 
-int gameOverScene(SDL_Keycode btn);
+void gameOverScene(SDL_Keycode btn);
+
+void settingsScene(SDL_Keycode btn);
+
+void setColors();
 
 SDL_Keycode handleButtonEvents(SDL_Event *e);
 

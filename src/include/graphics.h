@@ -35,6 +35,11 @@ typedef struct
 void renderText(char str[], char fontPath[], int fontSize, SDL_Color color, int posX, int posY);
 void renderButton(Button btn);
 int centerSurface(SDL_Surface *surface);
-void clear();
+
+void renderSoundBar(char fontPath[], int numSound, int xOffset, int posY, SDL_Color color, SDL_Color focus, bool isFocus);
+void setSound(unsigned int num);
+int getSound();
+
+void renderColorBar(char fontPath[], int xOffset, int posY, SDL_Color color, SDL_Color focus, SDL_Color *selectedColor, bool isFocus);
 
 #endif

@@ -81,11 +81,11 @@ void renderSnakeBody();
 
 void checkBoundaries();
 
-void freeSnake();
-static void freeSnakeBody();
+static void freeSnake();
 static void freeFood();
 
 int getScore();
+void setColor(SDL_Color selectedColor);
 
 /*Linked List Functions*/
 static node_t *create_new_body_node(Position);

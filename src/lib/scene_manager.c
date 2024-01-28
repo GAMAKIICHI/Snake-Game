@@ -1,5 +1,6 @@
 #include "scene_manager.h"
 
+SDL_Color selectedColor = {0x1C, 0xFC, 0x3, 0xFF};
 static FontSetting defaultFont = {"fonts/munro.ttf", 64, {0x1C, 0xFC, 0x3, 0xFF}};
 
 static Button startBtn = {"START", 175, 64, 0, 200, 32, true, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
@@ -8,10 +9,16 @@ static Button settingsBtn = {"SETTINGS", 175, 64, 0, 280, 32, false, {0x1C, 0xFC
 static Button playAgainBtn = {"PLAY AGAIN?", 175, 64, 0, 200, 32, true, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
 static Button exitBtn = {"EXIT", 175, 64, 0, 280, 32, false, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
 
+static barSettings defaultSoundBar = {"fonts/munro.ttf", 5, -96, 120, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}, true};
+static barSettings defaultColorBar = {"fonts/munro.ttf", (int)NULL, -96, 192, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}, false};
+
+static char score[10];
+
+/*These control which button is in focus on settings scene*/
+static unsigned int selectedButton = 0;
+
 void gameScene()
 {
-
-    char score[10];
 
     /*Convert score from int to char*/
     sprintf(score, "SCORE: %d", getScore());
@@ -30,7 +37,7 @@ void gameScene()
     renderFood();
 }
 
-int mainMenuScene(SDL_Keycode btn)
+void mainMenuScene(SDL_Keycode btn)
 {
     renderText("SNAKE", defaultFont.fontPath, defaultFont.fontSize, defaultFont.color, 0, 20);
 
@@ -59,17 +66,8 @@ int mainMenuScene(SDL_Keycode btn)
     renderButton(settingsBtn);
 }
 
-int gameOverScene(SDL_Keycode btn)
+void gameOverScene(SDL_Keycode btn)
 {
-
-    char score[10];
-
-    /*Convert score from int to char*/
-    sprintf(score, "SCORE: %d", getScore());
-
-    /*Deallocates memory for snake after score variable is used*/
-    freeSnake();
-
     renderText("GAME OVER", defaultFont.fontPath, defaultFont.fontSize, defaultFont.color, 0,20);
 
     renderText(score, defaultFont.fontPath, 48, defaultFont.color, 0,120);
@@ -97,6 +95,56 @@ int gameOverScene(SDL_Keycode btn)
 
     renderButton(playAgainBtn);
     renderButton(exitBtn);
+}
+
+void settingsScene(SDL_Keycode btn)
+{
+    renderText("SETTINGS", defaultFont.fontPath, defaultFont.fontSize, defaultFont.color, 0, 20);
+
+    if(btn == SDLK_UP && selectedButton >= 0)
+    {
+        selectedButton--;
+    }
+    else if(btn == SDLK_DOWN && selectedButton <= 2)
+    {
+        selectedButton++;
+    }
+
+    if(selectedButton == 0)
+    {
+        defaultSoundBar.isFocus = true;
+        defaultColorBar.isFocus = false;
+        exitBtn.isFocus = false;
+    }
+    else if(selectedButton == 1)
+    {
+        defaultColorBar.isFocus = true;
+        defaultSoundBar.isFocus = false;
+        exitBtn.isFocus = false;
+    }
+    else if(selectedButton == 2)
+    {
+        exitBtn.isFocus = true;
+        defaultColorBar.isFocus = false;
+        defaultSoundBar.isFocus = false;
+    }
+
+    renderSoundBar(defaultSoundBar.fontPath, defaultSoundBar.numSound, defaultSoundBar.xOffset, defaultSoundBar.posY, defaultSoundBar.color, defaultSoundBar.focus, defaultSoundBar.isFocus);
+    renderColorBar(defaultColorBar.fontPath, defaultColorBar.xOffset, defaultColorBar.posY, defaultColorBar.color, defaultColorBar.focus, &selectedColor, defaultColorBar.isFocus);
+    renderButton(exitBtn);
+}
+
+void setColors()
+{
+    defaultFont.color = selectedColor;
+    startBtn.color = selectedColor;
+    settingsBtn.color = selectedColor;
+    playAgainBtn.color = selectedColor;
+    exitBtn.color = selectedColor;
+    defaultSoundBar.color = selectedColor;
+    defaultColorBar.color = selectedColor;
+
+    setColor(selectedColor);
 }
 
 SDL_Keycode handleButtonEvents(SDL_Event *e)

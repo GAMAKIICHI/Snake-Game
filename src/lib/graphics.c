@@ -8,6 +8,10 @@ SDL_Rect foodRect = {(int)NULL, (int)NULL, 16,16};
 SDL_Rect snakeRect = {(int)NULL, (int)NULL, 16,16};
 SDL_Rect bodyRect = {(int)NULL, (int)NULL, 16,16};
 
+static unsigned int sound = 3;
+static SDL_Rect soundRect = {(int)NULL, (int)NULL, 16,32};
+static SDL_Rect colorRect = {(int)NULL, (int)NULL, 16,32};
+
 /*
 This function renders text to the window. 
 Text will be rendered to the center of the screen on the x axis by default. 
@@ -84,8 +88,79 @@ int centerSurface(SDL_Surface *surface)
     return (WIDTH - surface->w) / 2;
 }
 
-void clear()
+void renderSoundBar(char fontPath[], int numSound, int xOffset, int posY, SDL_Color color, SDL_Color focus, bool isFocus)
 {
-    /*Get rid of old surface*/
-    SDL_FreeSurface(gScreenSurface);
+    int fontSize = 48;
+
+    if(isFocus)
+        renderText("SOUND:", fontPath, fontSize, focus, xOffset, posY);
+    else if(!isFocus)
+        renderText("SOUND:", fontPath, fontSize, color, xOffset, posY);
+
+    SDL_SetRenderDrawColor(gRenderer, color.r, color.g, color.b, color.a);
+
+    soundRect.y = posY + (fontSize-soundRect.h);
+    soundRect.x = (WIDTH / 2.2);
+
+    for(int i = 1; i <= numSound; i++)
+    {
+        if(i <= sound)
+        {
+            SDL_RenderFillRect(gRenderer, &soundRect);
+        }
+        else
+        {
+            SDL_RenderDrawRect(gRenderer, &soundRect);
+        }
+
+        soundRect.x = soundRect.x + soundRect.w + soundRect.w / 2;
+    }
+
+}
+
+void setSound(unsigned int num)
+{
+    int *sPtr = &sound;
+    sPtr += num;
+}
+
+int getSound()
+{
+    return sound;
+}
+
+void renderColorBar(char fontPath[], int xOffset, int posY, SDL_Color color, SDL_Color focus, SDL_Color *selectedColor, bool isFocus)
+{
+    int fontSize = 48;
+    int w = colorRect.w;
+    int h = colorRect.h;
+
+    /*Colors: green, red, blue, purple, orange*/
+    SDL_Color colors[] = {{0x1C, 0xFC, 0x3, 0xFF}, {0xFC,0x03,0x03,0xFF}, {0x0b,0x03,0xFC,0xFF}, {0xFC,0x03,0xF4,0xFF}, {0xFC,0x80,0x03,0xFF}};
+
+    if(isFocus)
+        renderText("COLOR:", fontPath, fontSize, focus, xOffset, posY);
+    else if(!isFocus)
+        renderText("COLOR:", fontPath, fontSize, color, xOffset, posY);
+
+    colorRect.y = posY + (fontSize-colorRect.h);
+    colorRect.x = (WIDTH / 2.2);
+
+    for(int i = 0; i < sizeof(colors) / sizeof(colors[0]); i++)
+    {
+        SDL_SetRenderDrawColor(gRenderer, colors[i].r, colors[i].g, colors[i].b, colors[i].a);
+        SDL_RenderFillRect(gRenderer, &colorRect);
+
+        /*Draws a white outline of current color thats selected*/
+        if(colors[i].r == selectedColor->r && colors[i].g == selectedColor->g && colors[i].b == selectedColor->b && colors[i].a == selectedColor->a)
+        {
+            SDL_SetRenderDrawColor(gRenderer, focus.r, focus.g, focus.b, focus.a);
+            colorRect.w = colorRect.w + 1;
+            colorRect.h = colorRect.h + 1;
+            SDL_RenderDrawRect(gRenderer, &colorRect);
+            colorRect.w = w;
+            colorRect.h = h;
+        }
+        colorRect.x = colorRect.x + colorRect.w + colorRect.w / 2;
+    }
 }

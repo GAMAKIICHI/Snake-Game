@@ -34,6 +34,8 @@ void gameOverScene();
 
 void settingsScene();
 
+void setSelectedColor();
+
 void setColors();
 
 void resetSelectedButton();

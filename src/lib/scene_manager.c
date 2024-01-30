@@ -16,7 +16,8 @@ static char score[10];
 
 /*These control which button is in focus on settings scene*/
 static int selectedButton = 0;
-static bool isButtonPressed = false;
+
+static int selectedColorBtn = 0;
 
 void gameScene()
 {
@@ -122,12 +123,23 @@ void settingsScene()
     }
     else if(selectedButton == -1 && exitBtn.isFocus)
     {
-        quit = true;
+        setGameState(MAINMENU);
+    }
+
+    if(defaultColorBar.isFocus)
+    {
+        setSelectedColor();
+        setColors();
     }
 
     renderSoundBar(defaultSoundBar.fontPath, defaultSoundBar.numSound, defaultSoundBar.xOffset, defaultSoundBar.posY, defaultSoundBar.color, defaultSoundBar.focus, defaultSoundBar.isFocus);
     renderColorBar(defaultColorBar.fontPath, defaultColorBar.xOffset, defaultColorBar.posY, defaultColorBar.color, defaultColorBar.focus, &selectedColor, defaultColorBar.isFocus);
     renderButton(exitBtn);
+}
+
+void setSelectedColor()
+{
+    selectedColor = colors[selectedColorBtn];
 }
 
 void setColors()
@@ -158,28 +170,33 @@ void handleButtonEvents(SDL_Event *e)
                 if((getGameState() == MAINMENU || getGameState() == GAMEOVER || getGameState() == SETTINGS ) && selectedButton > 0)
                 {
                     selectedButton--;
-                    isButtonPressed = true;
                 }
                 break;
             case SDLK_DOWN:
                 if((getGameState() == MAINMENU || getGameState() == GAMEOVER) && selectedButton < 1)
                 {
                     selectedButton++;
-                    isButtonPressed = true;
                 }
                 else if(getGameState() == SETTINGS && selectedButton < 2)
                 {
                     selectedButton++;
-                    isButtonPressed = true;
+                }
+                break;
+            case SDLK_RIGHT:
+                if(selectedColorBtn < sizeof(colors) / sizeof(colors[0]) - 1)
+                {
+                    selectedColorBtn++;
+                }
+                break;
+            case SDLK_LEFT:
+                if(selectedColorBtn > 0)
+                {
+                    selectedColorBtn--;
                 }
                 break;
             case SDLK_RETURN:
                 selectedButton = -1;
                 break;
         }
-    }
-    else if(e->type == SDL_KEYUP)
-    {
-        isButtonPressed = false;
     }
 }

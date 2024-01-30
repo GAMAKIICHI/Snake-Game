@@ -19,6 +19,8 @@ extern SDL_Rect foodRect;
 extern SDL_Rect snakeRect;
 extern SDL_Rect bodyRect;
 
+extern SDL_Color colors[5];
+
 typedef struct 
 {
     char str[1000];
@@ -31,6 +33,8 @@ typedef struct
     SDL_Color color;
     SDL_Color focus;
 }Button;
+
+void initColors();
 
 void renderText(char str[], char fontPath[], int fontSize, SDL_Color color, int posX, int posY);
 void renderButton(Button btn);

@@ -12,6 +12,9 @@ static unsigned int sound = 3;
 static SDL_Rect soundRect = {(int)NULL, (int)NULL, 16,32};
 static SDL_Rect colorRect = {(int)NULL, (int)NULL, 16,32};
 
+/*Colors: green, red, blue, purple, orange*/
+SDL_Color colors[] = {{0x1C, 0xFC, 0x3, 0xFF}, {0xFC,0x03,0x03,0xFF}, {0x0b,0x03,0xFC,0xFF}, {0xFC,0x03,0xF4,0xFF}, {0xFC,0x80,0x03,0xFF}};
+
 /*
 This function renders text to the window. 
 Text will be rendered to the center of the screen on the x axis by default. 
@@ -134,9 +137,6 @@ void renderColorBar(char fontPath[], int xOffset, int posY, SDL_Color color, SDL
     int fontSize = 48;
     int w = colorRect.w;
     int h = colorRect.h;
-
-    /*Colors: green, red, blue, purple, orange*/
-    SDL_Color colors[] = {{0x1C, 0xFC, 0x3, 0xFF}, {0xFC,0x03,0x03,0xFF}, {0x0b,0x03,0xFC,0xFF}, {0xFC,0x03,0xF4,0xFF}, {0xFC,0x80,0x03,0xFF}};
 
     if(isFocus)
         renderText("COLOR:", fontPath, fontSize, focus, xOffset, posY);

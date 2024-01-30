@@ -26,16 +26,18 @@ typedef struct
 
 }barSettings;
 
-void mainMenuScene(SDL_Keycode btn);
+void mainMenuScene();
 
 void gameScene();
 
-void gameOverScene(SDL_Keycode btn);
+void gameOverScene();
 
-void settingsScene(SDL_Keycode btn);
+void settingsScene();
 
 void setColors();
 
-SDL_Keycode handleButtonEvents(SDL_Event *e);
+void resetSelectedButton();
+
+void handleButtonEvents(SDL_Event *e);
 
 #endif

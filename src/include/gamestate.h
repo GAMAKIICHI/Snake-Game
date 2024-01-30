@@ -2,6 +2,7 @@
 #define GAMESTATE
 
 #include <stdbool.h>
+#include "scene_manager.h"
 
 enum SCENES
 {

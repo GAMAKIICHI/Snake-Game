@@ -15,7 +15,8 @@ static barSettings defaultColorBar = {"fonts/munro.ttf", (int)NULL, -96, 192, {0
 static char score[10];
 
 /*These control which button is in focus on settings scene*/
-static unsigned int selectedButton = 0;
+static int selectedButton = 0;
+static bool isButtonPressed = false;
 
 void gameScene()
 {
@@ -37,27 +38,27 @@ void gameScene()
     renderFood();
 }
 
-void mainMenuScene(SDL_Keycode btn)
+void mainMenuScene()
 {
     renderText("SNAKE", defaultFont.fontPath, defaultFont.fontSize, defaultFont.color, 0, 20);
 
     renderText("CONTROLS: ARROW KEYS", defaultFont.fontPath, 32, defaultFont.color, 0, 120);
 
-    if(btn == SDLK_UP)
+    if(selectedButton == 0)
     {
         startBtn.isFocus = true;
         settingsBtn.isFocus = false;
     }
-    else if(btn == SDLK_DOWN) 
+    else if(selectedButton == 1)
     {
         settingsBtn.isFocus = true;
         startBtn.isFocus = false;
     }
-    else if(btn == SDLK_RETURN && startBtn.isFocus)
+    else if(selectedButton == -1 && startBtn.isFocus)
     {
         setGameState(GAME);
     }
-    else if(btn == SDLK_RETURN && settingsBtn.isFocus)
+    else if(selectedButton == -1 && settingsBtn.isFocus)
     {
         setGameState(SETTINGS);
     }
@@ -66,29 +67,29 @@ void mainMenuScene(SDL_Keycode btn)
     renderButton(settingsBtn);
 }
 
-void gameOverScene(SDL_Keycode btn)
+void gameOverScene()
 {
     renderText("GAME OVER", defaultFont.fontPath, defaultFont.fontSize, defaultFont.color, 0,20);
 
     renderText(score, defaultFont.fontPath, 48, defaultFont.color, 0,120);
-    
-    if(btn == SDLK_UP)
+
+    if(selectedButton == 0)
     {
         playAgainBtn.isFocus = true;
         exitBtn.isFocus = false;
     }
-    else if(btn == SDLK_DOWN) 
+    else if(selectedButton == 1)
     {
         exitBtn.isFocus = true;
         playAgainBtn.isFocus = false;
-    } 
-    else if(btn == SDLK_RETURN && playAgainBtn.isFocus)
+    }
+    else if(selectedButton == -1 && playAgainBtn.isFocus)
     {
         initSnake();
         initFood();
         setGameState(GAME);
     }
-    else if(btn == SDLK_RETURN && exitBtn.isFocus)
+    else if(selectedButton == -1 && exitBtn.isFocus)
     {
         quit = true;
     }
@@ -97,18 +98,9 @@ void gameOverScene(SDL_Keycode btn)
     renderButton(exitBtn);
 }
 
-void settingsScene(SDL_Keycode btn)
+void settingsScene()
 {
     renderText("SETTINGS", defaultFont.fontPath, defaultFont.fontSize, defaultFont.color, 0, 20);
-
-    if(btn == SDLK_UP && selectedButton >= 0)
-    {
-        selectedButton--;
-    }
-    else if(btn == SDLK_DOWN && selectedButton <= 2)
-    {
-        selectedButton++;
-    }
 
     if(selectedButton == 0)
     {
@@ -127,6 +119,10 @@ void settingsScene(SDL_Keycode btn)
         exitBtn.isFocus = true;
         defaultColorBar.isFocus = false;
         defaultSoundBar.isFocus = false;
+    }
+    else if(selectedButton == -1 && exitBtn.isFocus)
+    {
+        quit = true;
     }
 
     renderSoundBar(defaultSoundBar.fontPath, defaultSoundBar.numSound, defaultSoundBar.xOffset, defaultSoundBar.posY, defaultSoundBar.color, defaultSoundBar.focus, defaultSoundBar.isFocus);
@@ -147,10 +143,43 @@ void setColors()
     setColor(selectedColor);
 }
 
-SDL_Keycode handleButtonEvents(SDL_Event *e)
+void resetSelectedButton()
 {
-    if(e->type == SDL_KEYDOWN)
+    selectedButton = 0;
+}
+
+void handleButtonEvents(SDL_Event *e)
+{
+    if(e->type == SDL_KEYDOWN && e->key.repeat == 0) /*e->key.repeat == 0 ensures a key wont be repeatedly detected if held down*/
     {
-        return e->key.keysym.sym;
+        switch(e->key.keysym.sym)
+        {
+            case SDLK_UP:
+                if((getGameState() == MAINMENU || getGameState() == GAMEOVER || getGameState() == SETTINGS ) && selectedButton > 0)
+                {
+                    selectedButton--;
+                    isButtonPressed = true;
+                }
+                break;
+            case SDLK_DOWN:
+                if((getGameState() == MAINMENU || getGameState() == GAMEOVER) && selectedButton < 1)
+                {
+                    selectedButton++;
+                    isButtonPressed = true;
+                }
+                else if(getGameState() == SETTINGS && selectedButton < 2)
+                {
+                    selectedButton++;
+                    isButtonPressed = true;
+                }
+                break;
+            case SDLK_RETURN:
+                selectedButton = -1;
+                break;
+        }
+    }
+    else if(e->type == SDL_KEYUP)
+    {
+        isButtonPressed = false;
     }
 }

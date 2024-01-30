@@ -86,7 +86,7 @@ Position handleKeyEvent(SDL_Event *e)
         return (Position){0,0};
     }
 
-    if(e->type == SDL_KEYDOWN)
+    if(e->type == SDL_KEYDOWN && e->key.repeat == 0) /*e->key.repeat == 0 ensures a key wont be repeatedly detected if held down*/
     {
 
         /*These if statements make sure the head of the snake cant go backwards directly in the body*/

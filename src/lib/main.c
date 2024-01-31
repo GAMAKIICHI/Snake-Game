@@ -6,9 +6,9 @@
 
 int main(int argc, char *argv[])
 {
-
     initSnake();
     initFood();
+    loadAudio();
 
     /*Start up SDL and create window*/
     if(!init())

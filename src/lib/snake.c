@@ -20,6 +20,7 @@ void initFood()
 
     food->size = defaultSettings.size;
     food->pos = generateRandomPos(time(NULL));
+    food->color = defaultSettings.color;
 }
 
 void initSnake()
@@ -60,6 +61,7 @@ void placeFood()
         insertBodyNode((Position){-16,-16});
         food->pos = generateRandomPos(SDL_GetTicks());
         snake->score++;
+        playBeep();
     }
 }
 
@@ -74,7 +76,7 @@ void renderFood()
     foodRect.x = food->pos.x;
     foodRect.y = food->pos.y;
 
-    SDL_SetRenderDrawColor(gRenderer, 0x1C, 0xFC, 0x3, 0xFF);
+    SDL_SetRenderDrawColor(gRenderer, food->color.r, food->color.g, food->color.b, food->color.a);
     SDL_RenderFillRect(gRenderer, &foodRect);
 }
 
@@ -86,7 +88,7 @@ Position handleKeyEvent(SDL_Event *e)
         return (Position){0,0};
     }
 
-    if(e->type == SDL_KEYDOWN && e->key.repeat == 0) /*e->key.repeat == 0 ensures a key wont be repeatedly detected if held down*/
+    else if(e->type == SDL_KEYDOWN && e->key.repeat == 0) /*e->key.repeat == 0 ensures a key wont be repeatedly detected if held down*/
     {
 
         /*These if statements make sure the head of the snake cant go backwards directly in the body*/
@@ -327,6 +329,7 @@ int getScore()
 void setColor(SDL_Color selectedColor)
 {
     snake->color = selectedColor;
+    food->color = selectedColor;
 }
 
 /*

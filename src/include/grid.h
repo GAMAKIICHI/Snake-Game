@@ -8,4 +8,6 @@
 
 void renderGrid();
 
+void setGridColor(SDL_Color newColor);
+
 #endif

@@ -1,6 +1,5 @@
 #include "scene_manager.h"
 
-SDL_Color selectedColor = {0x1C, 0xFC, 0x3, 0xFF};
 static FontSetting defaultFont = {"assets/fonts/munro.ttf", 64, {0x1C, 0xFC, 0x3, 0xFF}};
 
 static Button startBtn = {"START", 175, 64, 0, 200, 32, true, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
@@ -96,6 +95,8 @@ void gameOverScene()
     else if(selectedButton == -1 && exitBtn.isFocus)
     {
         resetSelectedButton();
+        initSnake();
+        initFood();
         setGameState(MAINMENU);
     }
 
@@ -156,7 +157,6 @@ void setColors()
     defaultSoundBar.color = selectedColor;
     defaultColorBar.color = selectedColor;
     
-
     setColor(selectedColor);
     setGridColor(selectedColor);
 }

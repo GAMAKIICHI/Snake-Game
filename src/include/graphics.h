@@ -1,9 +1,9 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
-#include "SDL2/SDL_rect.h"
-#include "SDL2/SDL_video.h"
-#include "SDL2/SDL_render.h"
+#include <SDL2/SDL_rect.h>
+#include <SDL2/SDL_video.h>
+#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -41,7 +41,8 @@ void renderButton(Button btn);
 int centerSurface(SDL_Surface *surface);
 
 void renderSoundBar(char fontPath[], int numSound, int xOffset, int posY, SDL_Color color, SDL_Color focus, bool isFocus);
-void setSound(unsigned int num);
+void incSound();
+void decSound();
 int getSound();
 
 void renderColorBar(char fontPath[], int xOffset, int posY, SDL_Color color, SDL_Color focus, SDL_Color *selectedColor, bool isFocus);

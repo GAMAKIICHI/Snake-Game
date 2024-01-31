@@ -1,7 +1,7 @@
 #include "scene_manager.h"
 
 SDL_Color selectedColor = {0x1C, 0xFC, 0x3, 0xFF};
-static FontSetting defaultFont = {"fonts/munro.ttf", 64, {0x1C, 0xFC, 0x3, 0xFF}};
+static FontSetting defaultFont = {"assets/fonts/munro.ttf", 64, {0x1C, 0xFC, 0x3, 0xFF}};
 
 static Button startBtn = {"START", 175, 64, 0, 200, 32, true, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
 static Button settingsBtn = {"SETTINGS", 175, 64, 0, 280, 32, false, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
@@ -9,19 +9,19 @@ static Button settingsBtn = {"SETTINGS", 175, 64, 0, 280, 32, false, {0x1C, 0xFC
 static Button playAgainBtn = {"PLAY AGAIN?", 175, 64, 0, 200, 32, true, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
 static Button exitBtn = {"EXIT", 175, 64, 0, 280, 32, false, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
 
-static barSettings defaultSoundBar = {"fonts/munro.ttf", 5, -96, 120, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}, true};
-static barSettings defaultColorBar = {"fonts/munro.ttf", (int)NULL, -96, 192, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}, false};
+static barSettings defaultSoundBar = {"assets/fonts/munro.ttf", 5, -96, 120, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}, true};
+static barSettings defaultColorBar = {"assets/fonts/munro.ttf", (int)NULL, -96, 192, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}, false};
 
 static char score[10];
 
-/*These control which button is in focus on settings scene*/
+/*This control which button is in focus on settings scene*/
 static int selectedButton = 0;
 
+/*This controls which color is selected on color bar*/
 static int selectedColorBtn = 0;
 
 void gameScene()
 {
-
     /*Convert score from int to char*/
     sprintf(score, "SCORE: %d", getScore());
 
@@ -57,10 +57,12 @@ void mainMenuScene()
     }
     else if(selectedButton == -1 && startBtn.isFocus)
     {
+        resetSelectedButton();
         setGameState(GAME);
     }
     else if(selectedButton == -1 && settingsBtn.isFocus)
     {
+        resetSelectedButton();
         setGameState(SETTINGS);
     }
 
@@ -88,11 +90,13 @@ void gameOverScene()
     {
         initSnake();
         initFood();
+        resetSelectedButton();
         setGameState(GAME);
     }
     else if(selectedButton == -1 && exitBtn.isFocus)
     {
-        quit = true;
+        resetSelectedButton();
+        setGameState(MAINMENU);
     }
 
     renderButton(playAgainBtn);
@@ -151,8 +155,10 @@ void setColors()
     exitBtn.color = selectedColor;
     defaultSoundBar.color = selectedColor;
     defaultColorBar.color = selectedColor;
+    
 
     setColor(selectedColor);
+    setGridColor(selectedColor);
 }
 
 void resetSelectedButton()
@@ -170,28 +176,67 @@ void handleButtonEvents(SDL_Event *e)
                 if((getGameState() == MAINMENU || getGameState() == GAMEOVER || getGameState() == SETTINGS ) && selectedButton > 0)
                 {
                     selectedButton--;
+                    playBeep();
                 }
                 break;
             case SDLK_DOWN:
                 if((getGameState() == MAINMENU || getGameState() == GAMEOVER) && selectedButton < 1)
                 {
                     selectedButton++;
+                    playBeep();
                 }
                 else if(getGameState() == SETTINGS && selectedButton < 2)
                 {
                     selectedButton++;
+                    playBeep();
                 }
                 break;
             case SDLK_RIGHT:
-                if(selectedColorBtn < sizeof(colors) / sizeof(colors[0]) - 1)
+                if(getGameState() == SETTINGS) /*Increases Volume Level*/
                 {
-                    selectedColorBtn++;
+                    if(selectedColorBtn < sizeof(colors) / sizeof(colors[0]) - 1 && defaultColorBar.isFocus)
+                    {
+                        selectedColorBtn++;
+                    }
+                    else if(getSound() < 5 && defaultSoundBar.isFocus)
+                    {
+                        incSound();
+                    }
+                    
+                    /*Adjusts volume*/
+                    if(getSound() == 0)
+                    {
+                        Mix_Volume(-1, getSound());
+                    }
+                    else
+                    {   
+                        Mix_Volume(-1, getSound() * 15);
+                    }
+                    playBeep();
                 }
                 break;
-            case SDLK_LEFT:
-                if(selectedColorBtn > 0)
+            case SDLK_LEFT: 
+                if(getGameState() == SETTINGS) /*Decreases Volume Level*/
                 {
-                    selectedColorBtn--;
+                    if(selectedColorBtn > 0 && defaultColorBar.isFocus)
+                    {
+                        selectedColorBtn--;
+                    }
+                    else if(getSound() > 0 && defaultSoundBar.isFocus)
+                    {
+                        decSound();
+                    }
+
+                    /*Adjusts volume*/
+                    if(getSound() == 0)
+                    {
+                        Mix_Volume(-1, getSound());
+                    }
+                    else
+                    {   
+                        Mix_Volume(-1, getSound() * 15);
+                    }
+                    playBeep();
                 }
                 break;
             case SDLK_RETURN:

@@ -8,7 +8,7 @@ SDL_Rect foodRect = {(int)NULL, (int)NULL, 16,16};
 SDL_Rect snakeRect = {(int)NULL, (int)NULL, 16,16};
 SDL_Rect bodyRect = {(int)NULL, (int)NULL, 16,16};
 
-static unsigned int sound = 3;
+static unsigned int sound = 5;
 static SDL_Rect soundRect = {(int)NULL, (int)NULL, 16,32};
 static SDL_Rect colorRect = {(int)NULL, (int)NULL, 16,32};
 
@@ -75,12 +75,12 @@ void renderButton(Button btn)
     if(btn.isFocus)
     {
         SDL_SetRenderDrawColor(gRenderer, btn.focus.r, btn.focus.g, btn.focus.b, btn.focus.a);
-        renderText(btn.str, "fonts/munro.ttf", btn.fontSize, btn.focus, btn.posX, centerTextY);
+        renderText(btn.str, "assets/fonts/munro.ttf", btn.fontSize, btn.focus, btn.posX, centerTextY);
     }
     else
     {
         SDL_SetRenderDrawColor(gRenderer, btn.color.r, btn.color.g, btn.color.b, btn.color.a);
-        renderText(btn.str, "fonts/munro.ttf", btn.fontSize, btn.color, btn.posX, centerTextY);
+        renderText(btn.str, "assets/fonts/munro.ttf", btn.fontSize, btn.color, btn.posX, centerTextY);
     }
     
     SDL_RenderDrawRect(gRenderer, &button);
@@ -121,10 +121,14 @@ void renderSoundBar(char fontPath[], int numSound, int xOffset, int posY, SDL_Co
 
 }
 
-void setSound(unsigned int num)
+void incSound()
 {
-    int *sPtr = &sound;
-    sPtr += num;
+    sound++;
+}
+
+void decSound()
+{
+    sound--;
 }
 
 int getSound()

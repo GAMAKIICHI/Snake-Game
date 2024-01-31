@@ -6,6 +6,7 @@
 #include "snake.h"
 #include "gamestate.h"
 #include <stdbool.h>
+#include <audio.h>
 
 typedef struct
 {

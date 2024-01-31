@@ -4,13 +4,15 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "SDL2/SDL_events.h"
-#include "SDL2/SDL_timer.h"
-#include "graphics.h"
-#include "grid.h"
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_timer.h>
+#include <graphics.h>
+#include <grid.h>
 #include <time.h>
 #include <math.h>
-#include "gamestate.h"
+#include <gamestate.h>
+#include <SDL2/SDL_mixer.h>
+#include <audio.h>
 
 enum KeyPress
 {
@@ -53,6 +55,7 @@ typedef struct
 {
     Position pos;
     int size;
+    SDL_Color color;
 } Food;
 
 typedef struct

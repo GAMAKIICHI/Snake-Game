@@ -21,6 +21,8 @@ extern SDL_Rect bodyRect;
 
 extern SDL_Color colors[5];
 
+extern SDL_Color selectedColor;
+
 typedef struct 
 {
     char str[1000];

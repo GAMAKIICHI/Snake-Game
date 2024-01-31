@@ -20,7 +20,7 @@ void initFood()
 
     food->size = defaultSettings.size;
     food->pos = generateRandomPos(time(NULL));
-    food->color = defaultSettings.color;
+    food->color = selectedColor;
 }
 
 void initSnake()
@@ -42,7 +42,7 @@ void initSnake()
     snake->score = 0;
     snake->difficulty = defaultSettings.difficulty;
     snake->size = defaultSettings.size;
-    snake->color = defaultSettings.color;
+    snake->color = selectedColor;
 }
 
 void placeFood()
@@ -242,8 +242,8 @@ void renderSnakeBody()
         /*This checks whether the snake head has collided with snake body*/
         if(SDL_HasIntersection(&snakeRect, &bodyRect))
         {  
-            freeSnake();
             freeFood();
+            freeSnake();
             setGameState(GAMEOVER);
             return;
         }
@@ -308,14 +308,34 @@ void freeSnake()
 
     /*deallocate memory made for snake struct*/
     free(snake);
-    printf("Snake freed\n");
+
+    snake = NULL;
+
+    if(snake != NULL)
+    {
+        printf("Error freeing Snake\n");
+    }
+    else
+    {
+        printf("Snake freed\n");
+    }
 }
 
-static void freeFood()
+void freeFood()
 {
     /*deallocate memory made for food struct*/
     free(food);
-    printf("Food freed\n");
+
+    food = NULL;
+
+    if(food != NULL)
+    {
+        printf("Error freeing Snake\n");
+    }
+    else
+    {
+        printf("Food freed\n");
+    }
 }
 
 int getScore()

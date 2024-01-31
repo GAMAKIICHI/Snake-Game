@@ -61,6 +61,10 @@ int main(int argc, char *argv[])
 
             // system("cls"); /*clear console*/
         }
+
+        freeAudio();
+        freeSnake();
+        freeFood();
     }
     
     /*Free resources and close SDL*/

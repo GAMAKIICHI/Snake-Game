@@ -84,8 +84,8 @@ void renderSnakeBody();
 
 void checkBoundaries();
 
-static void freeSnake();
-static void freeFood();
+void freeSnake();
+void freeFood();
 
 int getScore();
 void setColor(SDL_Color selectedColor);

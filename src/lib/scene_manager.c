@@ -2,22 +2,27 @@
 
 static FontSetting defaultFont = {"assets/fonts/munro.ttf", 64, {0x1C, 0xFC, 0x3, 0xFF}};
 
-static Button startBtn = {"START", 175, 64, 0, 200, 32, true, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
-static Button settingsBtn = {"SETTINGS", 175, 64, 0, 280, 32, false, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
+static Button startBtn = {"START", 175, 64, 0, 200, 32, true, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}, true};
+static Button settingsBtn = {"SETTINGS", 175, 64, 0, 280, 32, false, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}, true};
 
-static Button playAgainBtn = {"PLAY AGAIN?", 175, 64, 0, 200, 32, true, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
-static Button exitBtn = {"EXIT", 175, 64, 0, 280, 32, false, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}};
+static Button playAgainBtn = {"PLAY AGAIN?", 175, 64, 0, 200, 32, true, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}, true};
+static Button exitBtn = {"EXIT", 175, 64, 0, 280, 32, false, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}, true};
 
-static barSettings defaultSoundBar = {"assets/fonts/munro.ttf", 5, -96, 120, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}, true};
-static barSettings defaultColorBar = {"assets/fonts/munro.ttf", (int)NULL, -96, 192, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}, false};
+static barSettings defaultDifficultySlider = {"assets/fonts/munro.ttf", (int)NULL, -27, 95, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}, true};
+static barSettings defaultSoundBar = {"assets/fonts/munro.ttf", 5, -64, 155, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}, true};
+static barSettings defaultColorBar = {"assets/fonts/munro.ttf", (int)NULL, -64, 215, {0x1C, 0xFC, 0x3, 0xFF}, {0xFF,0XFF,0XFF,0XFF}, false};
 
 static char score[10];
+static char difficulty[20] = "EASY";
 
 /*This control which button is in focus on settings scene*/
 static int selectedButton = 0;
 
 /*This controls which color is selected on color bar*/
 static int selectedColorBtn = 0;
+
+/*This controls which difficulty is selected on slider*/
+static int selectedDifficultyBtn = 0;
 
 void gameScene()
 {
@@ -108,26 +113,54 @@ void settingsScene()
 {
     renderText("SETTINGS", defaultFont.fontPath, defaultFont.fontSize, defaultFont.color, 0, 20);
 
+    /*Update difficulty text*/
+    if(getDifficulty() == EASY)
+    {
+        snprintf(difficulty, 10, "EASY");
+    }
+    else if(getDifficulty() == MEDIUM)
+    {
+        snprintf(difficulty, 10, "MEDIUM");
+    }
+    else if(getDifficulty() == HARD)
+    {
+        snprintf(difficulty, 10, "HARD");
+    }
+
+
     if(selectedButton == 0)
     {
-        defaultSoundBar.isFocus = true;
+        defaultDifficultySlider.isFocus = true;
+        defaultSoundBar.isFocus = false;
         defaultColorBar.isFocus = false;
         exitBtn.isFocus = false;
     }
     else if(selectedButton == 1)
     {
-        defaultColorBar.isFocus = true;
-        defaultSoundBar.isFocus = false;
+        defaultSoundBar.isFocus = true;
+        defaultDifficultySlider.isFocus = false;
+        defaultColorBar.isFocus = false;
         exitBtn.isFocus = false;
     }
     else if(selectedButton == 2)
     {
+        defaultColorBar.isFocus = true;
+        defaultDifficultySlider.isFocus = false;
+        defaultSoundBar.isFocus = false;
+        exitBtn.isFocus = false;
+    }
+    else if(selectedButton == 3)
+    {
         exitBtn.isFocus = true;
+        defaultDifficultySlider.isFocus = false;
         defaultColorBar.isFocus = false;
         defaultSoundBar.isFocus = false;
     }
     else if(selectedButton == -1 && exitBtn.isFocus)
     {
+        /*This applies settings*/
+        initSnake();
+        initFood();
         setGameState(MAINMENU);
     }
 
@@ -137,6 +170,7 @@ void settingsScene()
         setColors();
     }
 
+    renderDifficultySlider(defaultDifficultySlider.fontPath, difficulty, defaultDifficultySlider.xOffset, defaultDifficultySlider.posY, defaultDifficultySlider.color,defaultDifficultySlider.focus, defaultDifficultySlider.isFocus);
     renderSoundBar(defaultSoundBar.fontPath, defaultSoundBar.numSound, defaultSoundBar.xOffset, defaultSoundBar.posY, defaultSoundBar.color, defaultSoundBar.focus, defaultSoundBar.isFocus);
     renderColorBar(defaultColorBar.fontPath, defaultColorBar.xOffset, defaultColorBar.posY, defaultColorBar.color, defaultColorBar.focus, &selectedColor, defaultColorBar.isFocus);
     renderButton(exitBtn);
@@ -176,29 +210,37 @@ void handleButtonEvents(SDL_Event *e)
                 if((getGameState() == MAINMENU || getGameState() == GAMEOVER || getGameState() == SETTINGS ) && selectedButton > 0)
                 {
                     selectedButton--;
-                    playBeep();
                 }
+                playBeep();
                 break;
             case SDLK_DOWN:
                 if((getGameState() == MAINMENU || getGameState() == GAMEOVER) && selectedButton < 1)
                 {
                     selectedButton++;
-                    playBeep();
                 }
-                else if(getGameState() == SETTINGS && selectedButton < 2)
+                else if(getGameState() == SETTINGS && selectedButton < 3)
                 {
                     selectedButton++;
-                    playBeep();
                 }
+                playBeep();
                 break;
             case SDLK_RIGHT:
                 if(getGameState() == SETTINGS) /*Increases Volume Level*/
                 {
-                    if(selectedColorBtn < sizeof(colors) / sizeof(colors[0]) - 1 && defaultColorBar.isFocus)
+
+                    /*Adjust Difficulty*/
+                    if(defaultDifficultySlider.isFocus && selectedDifficultyBtn < 2)
+                    {
+                        ++selectedDifficultyBtn;
+                        setDifficulty(selectedDifficultyBtn);
+                    }
+
+                    /*Adjust Color*/
+                    if(defaultColorBar.isFocus && selectedColorBtn < sizeof(colors) / sizeof(colors[0]) - 1)
                     {
                         selectedColorBtn++;
                     }
-                    else if(getSound() < 5 && defaultSoundBar.isFocus)
+                    else if(defaultSoundBar.isFocus && getSound() < 5)
                     {
                         incSound();
                     }
@@ -212,17 +254,26 @@ void handleButtonEvents(SDL_Event *e)
                     {   
                         Mix_Volume(-1, getSound() * 15);
                     }
+
                     playBeep();
                 }
                 break;
             case SDLK_LEFT: 
                 if(getGameState() == SETTINGS) /*Decreases Volume Level*/
                 {
-                    if(selectedColorBtn > 0 && defaultColorBar.isFocus)
+                    /*Adjust Difficulty*/
+                    if(defaultDifficultySlider.isFocus && selectedDifficultyBtn > 0)
+                    {
+                        --selectedDifficultyBtn;
+                        setDifficulty(selectedDifficultyBtn);
+                    }
+
+                    /*Adjust Color*/
+                    if(defaultColorBar.isFocus && selectedColorBtn > 0)
                     {
                         selectedColorBtn--;
                     }
-                    else if(getSound() > 0 && defaultSoundBar.isFocus)
+                    else if(defaultSoundBar.isFocus && getSound() > 0)
                     {
                         decSound();
                     }

@@ -7,9 +7,7 @@
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_timer.h>
 #include <graphics.h>
-#include <grid.h>
 #include <time.h>
-#include <math.h>
 #include <gamestate.h>
 #include <SDL2/SDL_mixer.h>
 #include <audio.h>
@@ -58,13 +56,6 @@ typedef struct
     SDL_Color color;
 } Food;
 
-typedef struct
-{
-    int size;
-    SDL_Color color;
-    enum Difficulty difficulty;
-}settings;
-
 /*Food Functions*/
 void initFood();
 void placeFood();
@@ -86,6 +77,9 @@ void checkBoundaries();
 
 void freeSnake();
 void freeFood();
+
+enum Difficulty getDifficulty();
+void setDifficulty(int num);
 
 int getScore();
 void setColor(SDL_Color selectedColor);

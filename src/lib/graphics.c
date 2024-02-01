@@ -85,12 +85,28 @@ void renderButton(Button btn)
         renderText(btn.str, "assets/fonts/munro.ttf", btn.fontSize, btn.color, btn.posX, centerTextY);
     }
     
-    SDL_RenderDrawRect(gRenderer, &button);
+    if(btn.outline)
+    {
+        SDL_RenderDrawRect(gRenderer, &button);
+    }
 }
 
 int centerSurface(SDL_Surface *surface)
 {
     return (WIDTH - surface->w) / 2;
+}
+
+void renderDifficultySlider(char fontPath[], char difficulty[], int xOffset, int posY, SDL_Color color, SDL_Color focus, bool isFocus)
+{
+    int fontSize = 48;
+
+    if(isFocus)
+        renderText("DIFFICULTY:", fontPath, fontSize, focus, xOffset, posY);
+    else if(!isFocus)
+        renderText("DIFFICULTY:", fontPath, fontSize, color, xOffset, posY);
+    
+    /*This renders the current difficulty of the game. 168 needs to be added to the xOffset because we want to display the difficulty in front of the word "DIFFICULTY: "*/
+    renderText(difficulty, fontPath, fontSize, color, xOffset + 168, posY);
 }
 
 void renderSoundBar(char fontPath[], int numSound, int xOffset, int posY, SDL_Color color, SDL_Color focus, bool isFocus)
@@ -105,7 +121,7 @@ void renderSoundBar(char fontPath[], int numSound, int xOffset, int posY, SDL_Co
     SDL_SetRenderDrawColor(gRenderer, color.r, color.g, color.b, color.a);
 
     soundRect.y = posY + (fontSize-soundRect.h);
-    soundRect.x = (WIDTH / 2.2);
+    soundRect.x = (WIDTH / 2);
 
     for(int i = 1; i <= numSound; i++)
     {
@@ -150,7 +166,7 @@ void renderColorBar(char fontPath[], int xOffset, int posY, SDL_Color color, SDL
         renderText("COLOR:", fontPath, fontSize, color, xOffset, posY);
 
     colorRect.y = posY + (fontSize-colorRect.h);
-    colorRect.x = (WIDTH / 2.2);
+    colorRect.x = (WIDTH / 2);
 
     for(int i = 0; i < sizeof(colors) / sizeof(colors[0]); i++)
     {

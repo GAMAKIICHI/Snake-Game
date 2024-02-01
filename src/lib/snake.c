@@ -2,7 +2,8 @@
 
 static unsigned int lastMoved = 0;
 
-static settings defaultSettings = {16, {0x1C, 0xFC, 0x3, 0xFF}, EASY};
+static int size = 16;
+static enum Difficulty currentDifficulty = EASY;
 
 static Snake *snake;
 static Food *food;
@@ -18,7 +19,7 @@ void initFood()
         return;
     }
 
-    food->size = defaultSettings.size;
+    food->size = size;
     food->pos = generateRandomPos(time(NULL));
     food->color = selectedColor;
 }
@@ -35,13 +36,13 @@ void initSnake()
     }
 
     /*init snake position to the center of the grid*/
-    node_t *newHead = create_new_body_node((Position){((WIDTH/defaultSettings.size)/2) * defaultSettings.size, ((HEIGHT/defaultSettings.size)/2) * defaultSettings.size});
+    node_t *newHead = create_new_body_node((Position){((WIDTH/size)/2) * size, ((HEIGHT/size)/2) * size});
 
     snake->body = newHead;
     snake->sVel = (Position){0,0};
     snake->score = 0;
-    snake->difficulty = defaultSettings.difficulty;
-    snake->size = defaultSettings.size;
+    snake->difficulty = currentDifficulty;
+    snake->size = size;
     snake->color = selectedColor;
 }
 
@@ -336,6 +337,27 @@ void freeFood()
     {
         printf("Food freed\n");
     }
+}
+
+void setDifficulty(int num)
+{
+    if(num == 0)
+    {
+        currentDifficulty = EASY;
+    }
+    else if(num == 1)
+    {
+        currentDifficulty = MEDIUM;
+    }
+    else if(num == 2)
+    {
+        currentDifficulty = HARD;
+    }
+}
+
+enum Difficulty getDifficulty()
+{
+    return currentDifficulty;
 }
 
 int getScore()

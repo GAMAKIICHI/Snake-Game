@@ -21,7 +21,7 @@ void initFood()
 
     food->size = size;
     food->pos = generateRandomPos(time(NULL));
-    food->color = selectedColor;
+    food->color = getActiveColor();
 }
 
 void initSnake()
@@ -43,7 +43,7 @@ void initSnake()
     snake->score = 0;
     snake->difficulty = currentDifficulty;
     snake->size = size;
-    snake->color = selectedColor;
+    snake->color = getActiveColor();
 }
 
 void placeFood()

@@ -7,13 +7,7 @@
 #include "gamestate.h"
 #include <stdbool.h>
 #include <audio.h>
-
-typedef struct
-{
-    char fontPath[1000];
-    int fontSize;
-    SDL_Color color;
-}FontSetting;
+#include <settings.h>
 
 typedef struct
 {
@@ -34,8 +28,6 @@ void gameScene();
 void gameOverScene();
 
 void settingsScene();
-
-void setSelectedColor();
 
 void setColors();
 

@@ -8,14 +8,8 @@ SDL_Rect foodRect = {(int)NULL, (int)NULL, 16,16};
 SDL_Rect snakeRect = {(int)NULL, (int)NULL, 16,16};
 SDL_Rect bodyRect = {(int)NULL, (int)NULL, 16,16};
 
-static unsigned int sound = 5;
 static SDL_Rect soundRect = {(int)NULL, (int)NULL, 16,32};
 static SDL_Rect colorRect = {(int)NULL, (int)NULL, 16,32};
-
-/*Colors: green, red, blue, purple, orange*/
-SDL_Color colors[] = {{0x1C, 0xFC, 0x3, 0xFF}, {0xFC,0x03,0x03,0xFF}, {0x0b,0x03,0xFC,0xFF}, {0xFC,0x03,0xF4,0xFF}, {0xFC,0x80,0x03,0xFF}};
-
-SDL_Color selectedColor = {0x1C, 0xFC, 0x3, 0xFF};
 
 /*
 This function renders text to the window. 
@@ -68,21 +62,21 @@ void renderText(char str[], char fontPath[], int fontSize, SDL_Color color, int 
 
 void renderButton(Button btn)
 {
-    SDL_Rect button = {(WIDTH - btn.width) / 2 + btn.posX, btn.posY, btn.width, btn.height};
-
+    SDL_Rect button = {(WIDTH - btn.defaultSettings->width) / 2 + btn.posX, btn.posY, btn.defaultSettings->width, btn.defaultSettings->height};
+    
     /*This centers the text on the y axis of the button*/
-    int centerTextY = btn.posY + (btn.height - btn.fontSize) / 2;
+    int centerTextY = btn.posY + (btn.defaultSettings->height - btn.defaultSettings->fontSize) / 2;
 
     /*this changes the color of the button if its focused*/
     if(btn.isFocus)
     {
-        SDL_SetRenderDrawColor(gRenderer, btn.focus.r, btn.focus.g, btn.focus.b, btn.focus.a);
-        renderText(btn.str, "assets/fonts/munro.ttf", btn.fontSize, btn.focus, btn.posX, centerTextY);
+        SDL_SetRenderDrawColor(gRenderer, btn.defaultSettings->focus->r, btn.defaultSettings->focus->g, btn.defaultSettings->focus->b, btn.defaultSettings->focus->a);
+        renderText(btn.str, fontSettings.fontPath, btn.defaultSettings->fontSize, *btn.defaultSettings->focus, btn.posX, centerTextY);
     }
     else
     {
-        SDL_SetRenderDrawColor(gRenderer, btn.color.r, btn.color.g, btn.color.b, btn.color.a);
-        renderText(btn.str, "assets/fonts/munro.ttf", btn.fontSize, btn.color, btn.posX, centerTextY);
+        SDL_SetRenderDrawColor(gRenderer, btn.defaultSettings->color->r, btn.defaultSettings->color->g, btn.defaultSettings->color->b, btn.defaultSettings->color->a);
+        renderText(btn.str, fontSettings.fontPath, btn.defaultSettings->fontSize, *btn.defaultSettings->color, btn.posX, centerTextY);
     }
     
     if(btn.outline)
@@ -91,41 +85,30 @@ void renderButton(Button btn)
     }
 }
 
-int centerSurface(SDL_Surface *surface)
+static int centerSurface(SDL_Surface *surface)
 {
     return (WIDTH - surface->w) / 2;
 }
 
-void renderDifficultySlider(char fontPath[], char difficulty[], int xOffset, int posY, SDL_Color color, SDL_Color focus, bool isFocus)
+void renderDifficultySlider(Slider sldr)
 {
-    int fontSize = 48;
-
-    if(isFocus)
-        renderText("DIFFICULTY:", fontPath, fontSize, focus, xOffset, posY);
-    else if(!isFocus)
-        renderText("DIFFICULTY:", fontPath, fontSize, color, xOffset, posY);
+    renderText("DIFFICULTY:", fontSettings.fontPath, sldr.defaultSliderSettings->fontSize, (sldr.isFocus) ? *sldr.defaultSliderSettings->color : *sldr.defaultSliderSettings->focus, sldr.defaultSliderSettings->xOffset, sldr.posY);
     
-    /*This renders the current difficulty of the game. 168 needs to be added to the xOffset because we want to display the difficulty in front of the word "DIFFICULTY: "*/
-    renderText(difficulty, fontPath, fontSize, color, xOffset + 168, posY);
+    // renderText(difficulty, fontPath, fontSize, color, xOffset + 168, posY);
 }
 
-void renderSoundBar(char fontPath[], int numSound, int xOffset, int posY, SDL_Color color, SDL_Color focus, bool isFocus)
+void renderSoundBar(int numBars, Slider sldr)
 {
-    int fontSize = 48;
+    renderText("SOUND:", fontSettings.fontPath, sldr.defaultSliderSettings->fontSize, (sldr.isFocus) ? *sldr.defaultSliderSettings->color : *sldr.defaultSliderSettings->focus, sldr.defaultSliderSettings->xOffset, sldr.posY);
 
-    if(isFocus)
-        renderText("SOUND:", fontPath, fontSize, focus, xOffset, posY);
-    else if(!isFocus)
-        renderText("SOUND:", fontPath, fontSize, color, xOffset, posY);
+    SDL_SetRenderDrawColor(gRenderer, sldr.defaultSliderSettings->color->r, sldr.defaultSliderSettings->color->g, sldr.defaultSliderSettings->color->b, sldr.defaultSliderSettings->color->a);
 
-    SDL_SetRenderDrawColor(gRenderer, color.r, color.g, color.b, color.a);
-
-    soundRect.y = posY + (fontSize-soundRect.h);
+    soundRect.y = sldr.posY + (sldr.defaultSliderSettings->fontSize-soundRect.h);
     soundRect.x = (WIDTH / 2);
 
-    for(int i = 1; i <= numSound; i++)
+    for(int i = 1; i <= numBars; i++)
     {
-        if(i <= sound)
+        if(i <= getSound())
         {
             SDL_RenderFillRect(gRenderer, &soundRect);
         }
@@ -139,33 +122,11 @@ void renderSoundBar(char fontPath[], int numSound, int xOffset, int posY, SDL_Co
 
 }
 
-void incSound()
+void renderColorBar(Slider sldr)
 {
-    sound++;
-}
+    renderText("COLOR: ", fontSettings.fontPath, fontSettings.fontSize, (sldr.isFocus) ? *sldr.defaultSliderSettings->color : *sldr.defaultSliderSettings->focus, sldr.defaultSliderSettings->xOffset, sldr.posY);
 
-void decSound()
-{
-    sound--;
-}
-
-int getSound()
-{
-    return sound;
-}
-
-void renderColorBar(char fontPath[], int xOffset, int posY, SDL_Color color, SDL_Color focus, SDL_Color *selectedColor, bool isFocus)
-{
-    int fontSize = 48;
-    int w = colorRect.w;
-    int h = colorRect.h;
-
-    if(isFocus)
-        renderText("COLOR:", fontPath, fontSize, focus, xOffset, posY);
-    else if(!isFocus)
-        renderText("COLOR:", fontPath, fontSize, color, xOffset, posY);
-
-    colorRect.y = posY + (fontSize-colorRect.h);
+    colorRect.y = sldr.posY + (sldr.defaultSliderSettings->fontSize-colorRect.h);
     colorRect.x = (WIDTH / 2);
 
     for(int i = 0; i < sizeof(colors) / sizeof(colors[0]); i++)
@@ -174,14 +135,10 @@ void renderColorBar(char fontPath[], int xOffset, int posY, SDL_Color color, SDL
         SDL_RenderFillRect(gRenderer, &colorRect);
 
         /*Draws a white outline of current color thats selected*/
-        if(colors[i].r == selectedColor->r && colors[i].g == selectedColor->g && colors[i].b == selectedColor->b && colors[i].a == selectedColor->a)
+        if(colors[i].r == getActiveColor().r && colors[i].g == getActiveColor().g && colors[i].b == getActiveColor().b)
         {
-            SDL_SetRenderDrawColor(gRenderer, focus.r, focus.g, focus.b, focus.a);
-            colorRect.w = colorRect.w + 1;
-            colorRect.h = colorRect.h + 1;
+            SDL_SetRenderDrawColor(gRenderer, getFocusColor().r, getFocusColor().g, getFocusColor().b, getFocusColor().a);
             SDL_RenderDrawRect(gRenderer, &colorRect);
-            colorRect.w = w;
-            colorRect.h = h;
         }
         colorRect.x = colorRect.x + colorRect.w + colorRect.w / 2;
     }

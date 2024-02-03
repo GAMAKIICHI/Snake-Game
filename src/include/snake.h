@@ -11,6 +11,7 @@
 #include <gamestate.h>
 #include <SDL2/SDL_mixer.h>
 #include <audio.h>
+#include <settings.h>
 
 enum KeyPress
 {

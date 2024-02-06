@@ -29,8 +29,6 @@ void gameOverScene();
 
 void settingsScene();
 
-void setColors();
-
 void resetSelectedButton();
 
 void handleButtonEvents(SDL_Event *e);

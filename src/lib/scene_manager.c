@@ -6,12 +6,12 @@ static Button settingsBtn = {"SETTINGS", 0, 280, true, false, &buttonSettings};
 static Button playAgainBtn = {"PLAY AGAIN?", 0, 200, true, false, &buttonSettings};
 static Button exitBtn = {"EXIT", 0, 280, true, false, &buttonSettings};
 
-static Slider soundBar = {155, false, &defaultSliderSettings};
-static Slider colorBar = {215, false, &defaultSliderSettings};
-static Slider difficultySlider = {95, false, &defaultSliderSettings};
+static Slider difficultySlider = {-48, 95, false, &defaultSliderSettings};
+static Slider soundBar = {-88, 155, false, &defaultSliderSettings};
+static Slider colorBar = {-80, 215, false, &defaultSliderSettings};
 
 static char score[10];
-static char difficulty[20] = "EASY";
+static char currentDifficulty[20] = "EASY";
 
 /*This control which button is in focus on settings scene*/
 static int selectedButton = 0;
@@ -114,78 +114,63 @@ void settingsScene()
     /*Update difficulty text*/
     if(getDifficulty() == EASY)
     {
-        snprintf(difficulty, 10, "EASY");
+        snprintf(currentDifficulty, 10, "EASY");
     }
     else if(getDifficulty() == MEDIUM)
     {
-        snprintf(difficulty, 10, "MEDIUM");
+        snprintf(currentDifficulty, 10, "MEDIUM");
     }
     else if(getDifficulty() == HARD)
     {
-        snprintf(difficulty, 10, "HARD");
+        snprintf(currentDifficulty, 10, "HARD");
     }
 
 
-    // if(selectedButton == 0)
-    // {
-    //     defaultDifficultySlider.isFocus = true;
-    //     defaultSoundBar.isFocus = false;
-    //     defaultColorBar.isFocus = false;
-    //     exitBtn.isFocus = false;
-    // }
-    // else if(selectedButton == 1)
-    // {
-    //     defaultSoundBar.isFocus = true;
-    //     defaultDifficultySlider.isFocus = false;
-    //     defaultColorBar.isFocus = false;
-    //     exitBtn.isFocus = false;
-    // }
-    // else if(selectedButton == 2)
-    // {
-    //     defaultColorBar.isFocus = true;
-    //     defaultDifficultySlider.isFocus = false;
-    //     defaultSoundBar.isFocus = false;
-    //     exitBtn.isFocus = false;
-    // }
-    // else if(selectedButton == 3)
-    // {
-    //     exitBtn.isFocus = true;
-    //     defaultDifficultySlider.isFocus = false;
-    //     defaultColorBar.isFocus = false;
-    //     defaultSoundBar.isFocus = false;
-    // }
-    // else if(selectedButton == -1 && exitBtn.isFocus)
-    // {
-    //     /*This applies settings*/
-    //     initSnake();
-    //     initFood();
-    //     setGameState(MAINMENU);
-    // }
+    if(selectedButton == 0)
+    {
+        difficultySlider.isFocus = true;
+        soundBar.isFocus = false;
+        colorBar.isFocus = false;
+        exitBtn.isFocus = false;
+    }
+    else if(selectedButton == 1)
+    {
+        soundBar.isFocus = true;
+        difficultySlider.isFocus = false;
+        colorBar.isFocus = false;
+        exitBtn.isFocus = false;
+    }
+    else if(selectedButton == 2)
+    {
+        colorBar.isFocus = true;
+        difficultySlider.isFocus = false;
+        soundBar.isFocus = false;
+        exitBtn.isFocus = false;
+    }
+    else if(selectedButton == 3)
+    {
+        exitBtn.isFocus = true;
+        difficultySlider.isFocus = false;
+        colorBar.isFocus = false;
+        soundBar.isFocus = false;
+    }
+    else if(selectedButton == -1 && exitBtn.isFocus)
+    {
+        /*This applies settings*/
+        initSnake();
+        initFood();
+        setGameState(MAINMENU);
+    }
 
-    // if(defaultColorBar.isFocus)
-    // {
-    //     setActiveColor(colors[selectedColorBtn]);
-    //     setColors();
-    // }
+    if(colorBar.isFocus)
+    {
+        setActiveColor(colors[selectedColorBtn]);
+    }
 
-    renderDifficultySlider(difficultySlider);
+    renderDifficultySlider(difficultySlider, currentDifficulty);
     renderSoundBar(5, soundBar);
     renderColorBar(colorBar);
     renderButton(exitBtn);
-}
-
-void setColors()
-{
-    // activeColor = getActiveColor();
-    // startBtn.color = getActiveColor();
-    // settingsBtn.color = getActiveColor();
-    // playAgainBtn.color = getActiveColor();
-    // exitBtn.color = getActiveColor();
-    // defaultSoundBar.color = getActiveColor();
-    // defaultColorBar.color = getActiveColor();
-    
-    setColor(getActiveColor());
-    setGridColor(getActiveColor());
 }
 
 void resetSelectedButton()
@@ -203,40 +188,41 @@ void handleButtonEvents(SDL_Event *e)
                 if((getGameState() == MAINMENU || getGameState() == GAMEOVER || getGameState() == SETTINGS ) && selectedButton > 0)
                 {
                     selectedButton--;
+                    playBeep();
                 }
-                playBeep();
                 break;
             case SDLK_DOWN:
                 if((getGameState() == MAINMENU || getGameState() == GAMEOVER) && selectedButton < 1)
                 {
                     selectedButton++;
+                    playBeep();
                 }
                 else if(getGameState() == SETTINGS && selectedButton < 3)
                 {
                     selectedButton++;
+                    playBeep();
                 }
-                playBeep();
                 break;
             case SDLK_RIGHT:
-                if(getGameState() == SETTINGS) /*Increases Volume Level*/
+                if(getGameState() == SETTINGS) /*Increases Slider*/
                 {
 
-                    // /*Adjust Difficulty*/
-                    // if(defaultDifficultySlider.isFocus && selectedDifficultyBtn < 2)
-                    // {
-                    //     ++selectedDifficultyBtn;
-                    //     setDifficulty(selectedDifficultyBtn);
-                    // }
+                    /*Adjust Difficulty*/
+                    if(difficultySlider.isFocus && selectedDifficultyBtn < 2)
+                    {
+                        ++selectedDifficultyBtn;
+                        setDifficulty(selectedDifficultyBtn);
+                    }
 
-                    // /*Adjust Color*/
-                    // if(defaultColorBar.isFocus && selectedColorBtn < sizeof(colors) / sizeof(colors[0]) - 1)
-                    // {
-                    //     selectedColorBtn++;
-                    // }
-                    // else if(defaultSoundBar.isFocus && getSound() < 5)
-                    // {
-                    //     incSound();
-                    // }
+                    /*Adjust Color*/
+                    if(colorBar.isFocus && selectedColorBtn < sizeof(colors) / sizeof(colors[0]) - 1)
+                    {
+                        selectedColorBtn++;
+                    }
+                    else if(soundBar.isFocus && getSound() < 5)
+                    {
+                        incSound();
+                    }
                     
                     /*Adjusts volume*/
                     if(getSound() == 0)
@@ -247,29 +233,28 @@ void handleButtonEvents(SDL_Event *e)
                     {   
                         Mix_Volume(-1, getSound() * 15);
                     }
-
                     playBeep();
                 }
                 break;
             case SDLK_LEFT: 
-                if(getGameState() == SETTINGS) /*Decreases Volume Level*/
+                if(getGameState() == SETTINGS) /*Decreases Slider*/
                 {
-                    // /*Adjust Difficulty*/
-                    // if(defaultDifficultySlider.isFocus && selectedDifficultyBtn > 0)
-                    // {
-                    //     --selectedDifficultyBtn;
-                    //     setDifficulty(selectedDifficultyBtn);
-                    // }
+                    /*Adjust Difficulty*/
+                    if(difficultySlider.isFocus && selectedDifficultyBtn > 0)
+                    {
+                        --selectedDifficultyBtn;
+                        setDifficulty(selectedDifficultyBtn);
+                    }
 
-                    // /*Adjust Color*/
-                    // if(defaultColorBar.isFocus && selectedColorBtn > 0)
-                    // {
-                    //     selectedColorBtn--;
-                    // }
-                    // else if(defaultSoundBar.isFocus && getSound() > 0)
-                    // {
-                    //     decSound();
-                    // }
+                    /*Adjust Color*/
+                    if(colorBar.isFocus && selectedColorBtn > 0)
+                    {
+                        selectedColorBtn--;
+                    }
+                    else if(soundBar.isFocus && getSound() > 0)
+                    {
+                        decSound();
+                    }
 
                     /*Adjusts volume*/
                     if(getSound() == 0)

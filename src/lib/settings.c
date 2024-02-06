@@ -7,10 +7,16 @@ static SDL_Color focusColor = {0xFF,0XFF,0XFF,0XFF};
 SDL_Color colors[] = {{0x1C, 0xFC, 0x3, 0xFF}, {0xFC,0x03,0x03,0xFF}, {0x0b,0x03,0xFC,0xFF}, {0xFC,0x03,0xF4,0xFF}, {0xFC,0x80,0x03,0xFF}};
 
 static unsigned int sound = 5;
+static unsigned int size = 16;
 
 FontSetting fontSettings = {"assets/fonts/munro.ttf", 64};
 ButtonSettings buttonSettings = {175, 64, 32, &activeColor, &focusColor};
-SliderSettings defaultSliderSettings = {0, 48, &activeColor, &focusColor};
+SliderSettings defaultSliderSettings = {48, &activeColor, &focusColor};
+
+int getSize()
+{
+    return size;
+}
 
 SDL_Color getActiveColor()
 {

@@ -83,7 +83,6 @@ enum Difficulty getDifficulty();
 void setDifficulty(int num);
 
 int getScore();
-void setColor(SDL_Color selectedColor);
 
 /*Linked List Functions*/
 static node_t *create_new_body_node(Position);

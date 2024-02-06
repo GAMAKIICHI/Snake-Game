@@ -22,7 +22,6 @@ typedef struct
 
 typedef struct
 {
-    int xOffset;
     int fontSize;
     SDL_Color *color;
     SDL_Color *focus;
@@ -33,6 +32,8 @@ extern SDL_Color colors[];
 extern FontSetting fontSettings;
 extern ButtonSettings buttonSettings;
 extern SliderSettings defaultSliderSettings;
+
+int getSize();
 
 SDL_Color getActiveColor();
 SDL_Color getFocusColor();

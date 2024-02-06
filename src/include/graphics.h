@@ -36,6 +36,7 @@ typedef struct
 
 typedef struct
 {
+    int xOffset;
     int posY;
     bool isFocus;
     SliderSettings *defaultSliderSettings;
@@ -47,7 +48,7 @@ void renderText(char str[], char fontPath[], int fontSize, SDL_Color color, int 
 void renderButton(Button btn);
 static int centerSurface(SDL_Surface *surface);
 
-void renderDifficultySlider(Slider sldr);
+void renderDifficultySlider(Slider sldr, char currentDifficulty[]);
 
 void renderSoundBar(int numBars, Slider sldr);
 

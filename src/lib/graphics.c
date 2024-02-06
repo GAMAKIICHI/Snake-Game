@@ -90,16 +90,16 @@ static int centerSurface(SDL_Surface *surface)
     return (WIDTH - surface->w) / 2;
 }
 
-void renderDifficultySlider(Slider sldr)
+void renderDifficultySlider(Slider sldr, char currentDifficulty[])
 {
-    renderText("DIFFICULTY:", fontSettings.fontPath, sldr.defaultSliderSettings->fontSize, (sldr.isFocus) ? *sldr.defaultSliderSettings->color : *sldr.defaultSliderSettings->focus, sldr.defaultSliderSettings->xOffset, sldr.posY);
+    renderText("DIFFICULTY:", fontSettings.fontPath, sldr.defaultSliderSettings->fontSize, (sldr.isFocus) ? *sldr.defaultSliderSettings->focus : *sldr.defaultSliderSettings->color, sldr.xOffset, sldr.posY);
     
-    // renderText(difficulty, fontPath, fontSize, color, xOffset + 168, posY);
+    renderText(currentDifficulty, fontSettings.fontPath, sldr.defaultSliderSettings->fontSize, *sldr.defaultSliderSettings->color, sldr.xOffset + 168, sldr.posY);
 }
 
 void renderSoundBar(int numBars, Slider sldr)
 {
-    renderText("SOUND:", fontSettings.fontPath, sldr.defaultSliderSettings->fontSize, (sldr.isFocus) ? *sldr.defaultSliderSettings->color : *sldr.defaultSliderSettings->focus, sldr.defaultSliderSettings->xOffset, sldr.posY);
+    renderText("SOUND:", fontSettings.fontPath, sldr.defaultSliderSettings->fontSize, (sldr.isFocus) ? *sldr.defaultSliderSettings->focus : *sldr.defaultSliderSettings->color, sldr.xOffset, sldr.posY);
 
     SDL_SetRenderDrawColor(gRenderer, sldr.defaultSliderSettings->color->r, sldr.defaultSliderSettings->color->g, sldr.defaultSliderSettings->color->b, sldr.defaultSliderSettings->color->a);
 
@@ -124,7 +124,7 @@ void renderSoundBar(int numBars, Slider sldr)
 
 void renderColorBar(Slider sldr)
 {
-    renderText("COLOR: ", fontSettings.fontPath, fontSettings.fontSize, (sldr.isFocus) ? *sldr.defaultSliderSettings->color : *sldr.defaultSliderSettings->focus, sldr.defaultSliderSettings->xOffset, sldr.posY);
+    renderText("COLOR: ", fontSettings.fontPath, sldr.defaultSliderSettings->fontSize, (sldr.isFocus) ? *sldr.defaultSliderSettings->focus : *sldr.defaultSliderSettings->color, sldr.xOffset, sldr.posY);
 
     colorRect.y = sldr.posY + (sldr.defaultSliderSettings->fontSize-colorRect.h);
     colorRect.x = (WIDTH / 2);

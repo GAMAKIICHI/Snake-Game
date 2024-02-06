@@ -2,7 +2,6 @@
 
 static unsigned int lastMoved = 0;
 
-static int size = 16;
 static enum Difficulty currentDifficulty = EASY;
 
 static Snake *snake;
@@ -19,7 +18,7 @@ void initFood()
         return;
     }
 
-    food->size = size;
+    food->size = getSize();
     food->pos = generateRandomPos(time(NULL));
     food->color = getActiveColor();
 }
@@ -36,13 +35,13 @@ void initSnake()
     }
 
     /*init snake position to the center of the grid*/
-    node_t *newHead = create_new_body_node((Position){((WIDTH/size)/2) * size, ((HEIGHT/size)/2) * size});
+    node_t *newHead = create_new_body_node((Position){((WIDTH/getSize())/2) * getSize(), ((HEIGHT/getSize())/2) * getSize()});
 
     snake->body = newHead;
     snake->sVel = (Position){0,0};
     snake->score = 0;
     snake->difficulty = currentDifficulty;
-    snake->size = size;
+    snake->size = getSize();
     snake->color = getActiveColor();
 }
 
@@ -366,12 +365,6 @@ int getScore()
         return 0;
     else
         return snake->score;
-}
-
-void setColor(SDL_Color selectedColor)
-{
-    snake->color = selectedColor;
-    food->color = selectedColor;
 }
 
 /*
